@@ -17,7 +17,7 @@ export function openWhatsAppOrder(order) {
         "Thank you."
     ].filter(Boolean);
 
-    // IMPORTANT: join with DOUBLE newlines
+    // IMPORTANT: join with single newline
     const message = sections.join("\n");
 
     const url = `https://wa.me/${SHOP.whatsappNumber}?text=${encodeURIComponent(message)}`;

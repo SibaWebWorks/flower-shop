@@ -84,6 +84,56 @@
     gap: 12px;
 }
 
+/* Anchor jump: makes index.html#why-us land nicely */
+#why-us {
+    scroll-margin-top: 22px;
+}
+
+/* Trust + testimonials */
+
+.trust-strip {
+    display: grid;
+    gap: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-soft);
+    padding: 14px;
+}
+
+.trust-item {
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(18, 24, 38, 0.06);
+}
+
+.trust-title {
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.trust-text {
+    font-size: 14px;
+    margin: 0;
+}
+
+.testimonials {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.testimonial .quote {
+    margin: 0 0 10px;
+    font-size: 15px;
+}
+
+.testimonial .who {
+    margin: 0;
+    font-size: 13px;
+}
+
 @media (min-width: 900px) {
     .hero {
         grid-template-columns: 1.4fr 0.6fr;
@@ -91,6 +141,14 @@
     }
 
     .steps {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .trust-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .testimonials {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }

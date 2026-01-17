@@ -4,9 +4,22 @@
   border-radius: 12px;
   padding: 14px;
 }
-.card h3 { margin: 0 0 6px; font-size: 16px; }
-.card p { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
-.price { font-weight: 600; }
+
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.card p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.price {
+  font-weight: 600;
+}
+
 .btn {
   display: inline-block;
   margin-top: 10px;
@@ -15,4 +28,28 @@
   border: 1px solid var(--border);
   background: white;
 }
-.btn:hover { background: #f3f4f6; }
+
+.btn:hover {
+  background: #f3f4f6;
+}
+
+.sticky-bar {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  border-top: 1px solid var(--border);
+  padding: 12px;
+  margin-top: 24px;
+}
+
+.sticky-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sticky-title {
+  font-size: 14px;
+  color: var(--muted);
+}

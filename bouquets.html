@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bouquets | Sister Blooms</title>
+
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/pages.css" />
+</head>
+
+<body>
+    <header class="container">
+        <h1>Sister Blooms</h1>
+        <nav class="nav">
+            <a href="./index.html">Home</a>
+            <a href="./bouquets.html">Bouquets</a>
+            <a href="./about.html">About</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <h2>All bouquets</h2>
+            <div id="catalogGrid" class="grid"></div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { BOUQUETS } from "./js/data.js";
+
+        const grid = document.querySelector("#catalogGrid");
+
+        grid.innerHTML = BOUQUETS
+            .map(b => `
+          <article class="card">
+            <h3>${b.name}</h3>
+            <p>${b.shortDescription}</p>
+            <div class="price">R${b.priceMin}–R${b.priceMax}</div>
+            <a class="btn" href="./bouquet.html?id=${encodeURIComponent(b.id)}">
+              Customize
+            </a>
+          </article>
+        `)
+            .join("");
+    </script>
+</body>
+
+</html>

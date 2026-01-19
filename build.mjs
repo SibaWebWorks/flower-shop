@@ -73,6 +73,7 @@ function main() {
     copyDir(path.join(SRC, "css"), path.join(OUT, "css"));
     copyDir(path.join(SRC, "js"), path.join(OUT, "js"));
     copyDir(path.join(SRC, "assets"), path.join(OUT, "assets"));
+    copyDir(path.join(SRC, "static"), OUT);
 
     console.log("Built -> docs/");
 }

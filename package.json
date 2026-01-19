@@ -1,0 +1,25 @@
+{
+  "name": "flower-shop",
+  "version": "1.0.0",
+  "description": "Flower shop website (static) with WhatsApp ordering",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SibaWebWorks/flower-shop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SibaWebWorks/flower-shop/issues"
+  },
+  "homepage": "https://github.com/SibaWebWorks/flower-shop#readme"
+}

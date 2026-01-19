@@ -2,25 +2,12 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Bouquets | Sister Blooms</title>
-
-    <link rel="stylesheet" href="./css/base.css" />
-    <link rel="stylesheet" href="./css/layout.css" />
-    <link rel="stylesheet" href="./css/components.css" />
-    <link rel="stylesheet" href="./css/pages.css" />
+    <!-- @include partials/head.html -->
 </head>
 
 <body>
-    <header class="container">
-        <h1>Sister Blooms</h1>
-        <nav class="nav">
-            <a href="./index.html">Home</a>
-            <a href="./bouquets.html">Bouquets</a>
-            <a href="./about.html">About</a>
-        </nav>
-    </header>
+    <!-- @include partials/header.html -->
 
     <main class="container">
         <section class="section">
@@ -41,12 +28,13 @@
             <p>${b.shortDescription}</p>
             <div class="price">R${b.priceMin}–R${b.priceMax}</div>
             <a class="btn" href="./bouquet.html?id=${encodeURIComponent(b.id)}">
-              Customize
+              Customise
             </a>
           </article>
         `)
             .join("");
     </script>
+    <!-- @include partials/footer.html -->
 </body>
 
 </html>

@@ -73,11 +73,13 @@ label:hover {
 .sticky-bar {
   position: sticky;
   bottom: 0;
-  background: var(--surface);          /* fully opaque */
+  background: var(--surface);
+  /* fully opaque */
   border-top: 1px solid var(--border);
   padding: 12px;
   margin-top: 24px;
-  box-shadow: 0 -10px 24px rgba(18, 24, 38, 0.06); /* subtle separation */
+  box-shadow: 0 -10px 24px rgba(18, 24, 38, 0.06);
+  /* subtle separation */
 }
 
 
@@ -91,4 +93,55 @@ label:hover {
 .sticky-title {
   font-size: 14px;
   color: var(--muted);
+}
+
+
+/* Badge (Cart count) */
+.badge {
+  display: none;
+  margin-left: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(18, 24, 38, 0.12);
+  background: rgba(34, 197, 94, 0.14);
+  font-size: 12px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Footer */
+.footer {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.footer-title {
+  font-weight: 900;
+}
+
+.footer-text {
+  margin: 6px 0 0;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-note {
+  margin: 12px 0 0;
+  font-size: 13px;
 }

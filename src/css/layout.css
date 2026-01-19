@@ -1,0 +1,41 @@
+.container {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 28px 18px;
+}
+
+.section {
+  margin-top: 28px;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.nav a {
+  padding: 10px 12px;
+  border-radius: 999px;
+}
+
+.nav a:hover {
+  background: rgba(255, 79, 163, 0.1);
+  text-decoration: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

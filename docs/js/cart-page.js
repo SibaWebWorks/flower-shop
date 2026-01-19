@@ -22,15 +22,31 @@ function formatOptions(i) {
   return parts.length ? parts.join(" | ") : "No custom options";
 }
 
+function setCheckoutEnabled(enabled) {
+  if (!checkoutBtn) return;
+  checkoutBtn.disabled = !enabled;
+}
+
 function render() {
   const cart = getCart();
 
   if (!cartList) return;
 
   if (!cart.length) {
-    cartList.innerHTML = `<p class="muted">Your cart is empty.</p>`;
+    cartList.innerHTML = `
+      <div class="card">
+        <h3 style="margin:0 0 6px;">Your cart is empty</h3>
+        <p class="muted" style="margin:0 0 10px;">
+          Browse bouquets and add as many as you like, then send one WhatsApp order from here.
+        </p>
+        <a class="btn" href="./bouquets.html">Browse bouquets</a>
+      </div>
+    `;
+    setCheckoutEnabled(false);
     return;
   }
+
+  setCheckoutEnabled(true);
 
   cartList.innerHTML = cart
     .map(
@@ -66,6 +82,7 @@ function wire() {
       const key = e.target.dataset.key;
       updateQty(key, e.target.value);
       render();
+      if (typeof window.__sbUpdateCartBadge === "function") window.__sbUpdateCartBadge();
     });
   });
 
@@ -74,6 +91,7 @@ function wire() {
       const key = e.target.dataset.key;
       removeItem(key);
       render();
+      if (typeof window.__sbUpdateCartBadge === "function") window.__sbUpdateCartBadge();
     });
   });
 }
@@ -82,11 +100,7 @@ function buildWhatsAppMessage() {
   const cart = getCart();
   if (!cart.length) return null;
 
-  const lines = [
-    "Hi, I’d like to place an order.",
-    " ",
-    "Items:",
-  ];
+  const lines = ["Hi, I’d like to place an order.", " ", "Items:"];
 
   cart.forEach((i, idx) => {
     lines.push(`${idx + 1}) ${i.name} (Qty: ${i.qty})`);
@@ -106,14 +120,12 @@ function buildWhatsAppMessage() {
 clearBtn?.addEventListener("click", () => {
   clearCart();
   render();
+  if (typeof window.__sbUpdateCartBadge === "function") window.__sbUpdateCartBadge();
 });
 
 checkoutBtn?.addEventListener("click", () => {
   const msg = buildWhatsAppMessage();
-  if (!msg) {
-    alert("Your cart is empty.");
-    return;
-  }
+  if (!msg) return;
   const url = `https://wa.me/${SHOP.whatsappNumber}?text=${encodeURIComponent(msg)}`;
   window.open(url, "_blank");
 });

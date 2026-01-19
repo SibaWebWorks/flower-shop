@@ -145,3 +145,40 @@ label:hover {
   margin: 12px 0 0;
   font-size: 13px;
 }
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  border: 1px solid rgba(18, 24, 38, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast.show {
+  display: inline-flex;
+}
+
+.toast .toast-muted {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Disabled button (basic affordance) */
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

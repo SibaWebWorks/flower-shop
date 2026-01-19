@@ -1,32 +1,69 @@
-import { SHOP, BOUQUETS } from "./data.js";
+import { BOUQUETS } from "./data.js";
+import { addToCart, getCartCount } from "./cart.js";
 
-function formatZarRange(min, max) {
-  // simple formatting; we can improve later
-  return `R${min}–R${max}`;
+function $(sel) {
+  return document.querySelector(sel);
 }
 
-function renderFeatured() {
-  const nameEl = document.querySelector("#shopName");
-  if (nameEl) nameEl.textContent = SHOP.name;
+function renderGrid(container, bouquets, mode) {
+  if (!container) return;
 
-  const featured = BOUQUETS.filter(b => b.featured).slice(0, 6);
-  const grid = document.querySelector("#featuredGrid");
+  container.innerHTML = bouquets
+    .map((b) => {
+      const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
 
-  if (!grid) return;
-
-  grid.innerHTML = featured
-    .map(b => {
-      const price = formatZarRange(b.priceMin, b.priceMax);
       return `
-        <article class="card">
+        <div class="card">
           <h3>${b.name}</h3>
-          <p>${b.shortDescription}</p>
-          <div class="price">${price}</div>
-          <a class="btn" href="./bouquet.html?id=${encodeURIComponent(b.id)}">Customize</a>
-        </article>
+          <p class="muted">${b.shortDescription}</p>
+          <p class="price">R${b.priceMin}–R${b.priceMax}</p>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <a class="btn" href="${detailUrl}">Customise</a>
+            <button class="btn" data-quickadd="${b.id}" type="button">Add to cart</button>
+          </div>
+        </div>
       `;
     })
     .join("");
+
+  container.querySelectorAll("[data-quickadd]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.getAttribute("data-quickadd");
+      const b = BOUQUETS.find((x) => x.id === id);
+      if (!b) return;
+
+      // Default (first options) for quick add
+      addToCart({
+        id: b.id,
+        name: b.name,
+        priceMin: b.priceMin,
+        priceMax: b.priceMax,
+        size: b.sizes?.[0] ?? null,
+        color: b.colors?.[0] ?? null,
+        addons: [],
+        qty: 1
+      });
+
+      window.location.href = "./cart.html";
+    });
+  });
 }
 
-renderFeatured();
+// Home featured
+const featuredGrid = $("#featuredGrid");
+if (featuredGrid) {
+  renderGrid(featuredGrid, BOUQUETS.slice(0, 3), "featured");
+}
+
+// Bouquets page grid (preferred id)
+const bouquetsGrid = $("#bouquetsGrid") || $("#allBouquetsGrid") || $("#grid") || $("#featuredGrid");
+if (bouquetsGrid && bouquetsGrid !== featuredGrid) {
+  renderGrid(bouquetsGrid, BOUQUETS, "catalog");
+}
+
+// Optional: show cart count if you add an element later
+const cartCountEl = $("#cartCount");
+if (cartCountEl) {
+  cartCountEl.textContent = String(getCartCount());
+}

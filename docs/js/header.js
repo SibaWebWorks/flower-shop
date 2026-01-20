@@ -1,5 +1,7 @@
 import { getCartCount } from "./cart.js";
 
+const CART_KEY = "sb_cart_v1";
+
 function updateCartBadge() {
   const el = document.querySelector("#cartCount");
   if (!el) return;
@@ -15,23 +17,32 @@ function updateCartBadge() {
   el.style.display = "inline-flex";
 }
 
+function normalizePathFile() {
+  const file = (window.location.pathname.split("/").pop() || "").trim();
+  return file || "index.html";
+}
+
 function setActiveNav() {
-  const currentFile = window.location.pathname.split("/").pop() || "index.html";
+  const currentFile = normalizePathFile();
 
   document.querySelectorAll("nav.nav a").forEach((a) => {
     a.classList.remove("active");
 
-    const rawHref = a.getAttribute("href") || "";
-    if (!rawHref) return;
+    const href = (a.getAttribute("href") || "").trim();
+    if (!href) return;
 
-    const hrefFile = rawHref
-      .replace(/^\.\//, "")
-      .split("?")[0]
-      .split("#")[0];
+    // Normalize href: remove leading ./, strip query/hash
+    const hrefNoPrefix = href.replace(/^\.\//, "");
+    const hrefFile = hrefNoPrefix.split("?")[0].split("#")[0];
 
-    if (hrefFile === currentFile) {
-      a.classList.add("active");
+    // Special case: if link is an in-page section on index.html, only active on index.html
+    if (hrefNoPrefix.startsWith("index.html#")) {
+      if (currentFile === "index.html") a.classList.add("active");
+      return;
     }
+
+    // Normal page match
+    if (hrefFile === currentFile) a.classList.add("active");
   });
 }
 
@@ -41,7 +52,7 @@ setActiveNav();
 
 // Keep in sync if cart updates in another tab
 window.addEventListener("storage", (e) => {
-  if (e.key === "sb_cart_v1") updateCartBadge();
+  if (e.key === CART_KEY) updateCartBadge();
 });
 
 // Optional: allow other scripts to trigger refresh

@@ -55,7 +55,7 @@
     margin-top: 12px;
 }
 
-/* neutral accent block on the right (no color) */
+/* neutral accent block on the right */
 .hero-sparkle {
     height: 170px;
     border-radius: var(--radius-lg);
@@ -67,17 +67,11 @@
     box-shadow: var(--shadow-soft);
 }
 
+/* Steps */
 .steps {
     display: grid;
     gap: 14px;
     margin-top: 14px;
-}
-
-.section-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
 }
 
 /* Anchor jump */

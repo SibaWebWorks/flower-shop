@@ -4,8 +4,9 @@
   padding: 28px 18px;
 }
 
+/* Single source of truth for section spacing */
 .section {
-  margin-top: 28px;
+  margin-top: 34px;
 }
 
 .nav {
@@ -25,7 +26,7 @@
   padding: 10px 12px;
   border-radius: 999px;
   border: 1px solid transparent;
-  transition: background 150ms ease, border-color 150ms ease;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
 .nav a:hover {
@@ -34,6 +35,25 @@
   text-decoration: none;
 }
 
+/* ACTIVE TAB: supported by header.js adding `.active` */
+.nav a.active {
+  background: rgba(17, 17, 17, 0.08);
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+/* Headings in section headers feel tighter */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-head h2 {
+  margin-bottom: 0;
+}
+
+/* Grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -47,19 +67,34 @@
   }
 }
 
-/* ==========================
-   Micro-polish: layout rhythm
-   ========================== */
-
-.section {
-  margin-top: 34px;
+/* Small utility layout helpers (used to replace inline styles gradually) */
+.stack {
+  display: grid;
+  gap: 12px;
 }
 
-.section-head h2 {
-  margin-bottom: 0;
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.nav a.active {
-  background: rgba(17, 17, 17, 0.07);
-  border-color: rgba(17, 17, 17, 0.16);
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mt-14 {
+  margin-top: 14px;
 }

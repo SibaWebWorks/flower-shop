@@ -29,22 +29,30 @@
   font-weight: 800;
 }
 
+/* --------------------------------
+   Buttons: base + variants
+-------------------------------- */
+
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 12px;
+
   padding: 12px 14px;
   border-radius: 999px;
+
   border: 1px solid rgba(17, 17, 17, 0.18);
   background: rgba(17, 17, 17, 0.04);
   color: var(--text);
+
   font-family: var(--font-head);
   font-weight: 600;
+
   cursor: pointer;
   user-select: none;
-  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease;
+
+  transition: background 150ms ease, transform 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
 .btn:hover {
@@ -61,7 +69,53 @@
   cursor: not-allowed;
 }
 
-/* Inputs */
+/* Anchor buttons */
+a.btn {
+  text-decoration: none !important;
+}
+
+/* Variants */
+.btn-primary {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.btn-primary:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.btn-secondary {
+  background: rgba(17, 17, 17, 0.04);
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+.btn-secondary:hover {
+  background: rgba(17, 17, 17, 0.07);
+  border-color: rgba(17, 17, 17, 0.22);
+}
+
+.btn-danger {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.btn-danger:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.24);
+}
+
+/* Small button utility */
+.btn-sm {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* --------------------------------
+   Inputs (premium feel)
+-------------------------------- */
+
 select,
 input[type="text"],
 textarea {
@@ -72,6 +126,23 @@ textarea {
   background: #ffffff;
   font-family: var(--font-body);
   font-size: 14px;
+
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+select:focus,
+input[type="text"]:focus,
+textarea:focus {
+  border-color: rgba(17, 17, 17, 0.28);
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.08);
+  outline: none;
+}
+
+/* Make radio/checkbox areas feel deliberate */
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
 }
 
 /* Labels (tap targets) */
@@ -87,7 +158,18 @@ label:hover {
   background: rgba(17, 17, 17, 0.03);
 }
 
-/* Sticky bar */
+/* Help checkbox/radio align nicely */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #111111;
+}
+
+/* --------------------------------
+   Sticky bar
+-------------------------------- */
+
 .sticky-bar {
   position: sticky;
   bottom: 0;
@@ -97,7 +179,6 @@ label:hover {
   margin-top: 24px;
   box-shadow: 0 -10px 24px rgba(17, 17, 17, 0.06);
 }
-
 
 .sticky-bar-inner {
   display: flex;
@@ -110,7 +191,6 @@ label:hover {
   font-size: 14px;
   color: var(--muted);
 }
-
 
 /* Badge (Cart count) */
 .badge {
@@ -128,7 +208,10 @@ label:hover {
   justify-content: center;
 }
 
-/* Footer */
+/* --------------------------------
+   Footer
+-------------------------------- */
+
 .footer {
   margin-top: 28px;
   padding-top: 18px;
@@ -194,15 +277,6 @@ label:hover {
   gap: 10px;
 }
 
-.footer-whatsapp {
-  border-color: rgba(17, 17, 17, 0.20);
-  background: rgba(17, 17, 17, 0.05);
-}
-
-.footer-whatsapp:hover {
-  background: rgba(17, 17, 17, 0.08);
-}
-
 .footer-legal {
   font-size: 12px;
 }
@@ -238,58 +312,52 @@ label:hover {
   color: var(--muted);
 }
 
-/* ==========================
-   Micro-polish: buttons + UI
-   ========================== */
+/* --------------------------------
+   Cart-specific reusable classes
+   (lets you remove inline styles later)
+-------------------------------- */
 
-/* Button hierarchy */
-.btn {
-  box-shadow: none;
+.cart-item {
+  display: grid;
+  gap: 10px;
 }
 
-.btn-primary {
-  background: #111111;
-  color: #ffffff;
-  border-color: #111111;
+.cart-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.btn-primary:hover {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
+.cart-item-meta {
+  display: grid;
+  gap: 6px;
 }
 
-.btn-secondary {
-  background: rgba(17, 17, 17, 0.04);
-  border-color: rgba(17, 17, 17, 0.18);
+.cart-controls {
+  display: grid;
+  gap: 10px;
 }
 
-.btn-secondary:hover {
-  background: rgba(17, 17, 17, 0.07);
-  border-color: rgba(17, 17, 17, 0.22);
+.cart-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* Small button (optional utility) */
-.btn-sm {
-  padding: 8px 10px;
-  font-size: 12px;
+.cart-qty strong {
+  font-weight: 800;
 }
 
-/* Make inline buttons look consistent */
-a.btn {
-  text-decoration: none !important;
+.cart-line-total {
+  margin-left: auto;
+  color: var(--muted);
 }
 
-/* Inputs feel more premium */
-select,
-input[type="text"],
-textarea {
-  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
-}
-
-select:focus,
-input[type="text"]:focus,
-textarea:focus {
-  border-color: rgba(17, 17, 17, 0.28);
-  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.08);
-  outline: none;
+.hr {
+  border: 0;
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
 }

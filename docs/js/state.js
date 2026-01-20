@@ -35,11 +35,47 @@ function updateMiniCartBar() {
   else bar.style.display = "none";
 }
 
+/* ------------------------------
+   Toast UX (non-blocking feedback)
+-------------------------------- */
+
+function ensureToast() {
+  let toast = document.querySelector("#sbToast");
+  if (toast) return toast;
+
+  toast = document.createElement("div");
+  toast.id = "sbToast";
+  toast.className = "toast";
+  toast.innerHTML = `
+    <span id="sbToastTitle">Added to cart</span>
+    <span class="toast-muted" id="sbToastMeta"></span>
+  `;
+  document.body.appendChild(toast);
+  return toast;
+}
+
+function showToast(title = "Added to cart", meta = "") {
+  const toast = ensureToast();
+  const titleEl = toast.querySelector("#sbToastTitle");
+  const metaEl = toast.querySelector("#sbToastMeta");
+
+  if (titleEl) titleEl.textContent = title;
+  if (metaEl) metaEl.textContent = meta;
+
+  toast.classList.add("show");
+  window.clearTimeout(window.__sbToastTimer);
+  window.__sbToastTimer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
+}
+
+/* ------------------------------
+   Render helpers
+-------------------------------- */
+
 function renderOptionPills({ name, options, type, selectedName }) {
   if (!options?.length) return `<p class="muted">No options available.</p>`;
 
-  // type: "radio" | "checkbox"
-  // selectedName only for radio groups
   const items = options
     .map((opt) => {
       const id = `${name}-${String(opt).toLowerCase().replace(/\s+/g, "-")}`;
@@ -145,18 +181,22 @@ function renderBouquet(bouquet) {
   updateMiniCartBar();
 }
 
+/* ------------------------------
+   Wiring
+-------------------------------- */
+
 function wireValidation() {
   document
     .querySelectorAll('input[name="size"], input[name="color"], input[type="checkbox"]')
-    .forEach((el) => el.addEventListener("change", () => {
-      refreshButtonState();
-      updateMiniCartBar();
-    }));
+    .forEach((el) =>
+      el.addEventListener("change", () => {
+        refreshButtonState();
+        updateMiniCartBar();
+      })
+    );
 
   const btn = document.querySelector("#addToCartBtn");
-  if (btn) {
-    btn.addEventListener("click", onAddToCart);
-  }
+  if (btn) btn.addEventListener("click", onAddToCart);
 }
 
 function refreshButtonState() {
@@ -209,9 +249,17 @@ function onAddToCart() {
   updateHeaderCartBadge();
   updateMiniCartBar();
 
-  // Smooth UX: keep them here (they can add more variants) OR go to cart
-  window.location.href = "./cart.html";
+  // Stay on page, give feedback, allow multiple adds
+  showToast("Added to cart", bouquet.name);
+
+  // OPTIONAL: if your mini cart has a CTA element, reveal/enable it
+  const viewBtn = document.querySelector("#miniCartViewBtn");
+  if (viewBtn) viewBtn.style.display = "inline-flex";
 }
+
+/* ------------------------------
+   Boot
+-------------------------------- */
 
 const bouquetId = getBouquetId();
 const bouquet = BOUQUETS.find((b) => b.id === bouquetId);

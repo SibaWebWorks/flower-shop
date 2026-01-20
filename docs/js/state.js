@@ -31,9 +31,14 @@ function updateMiniCartBar() {
   const count = getCartCount();
   countEl.textContent = String(count || 0);
 
-  if (count > 0) bar.style.display = "block";
-  else bar.style.display = "none";
+  const title = bar.querySelector(".sticky-title");
+  if (title) {
+    title.innerHTML = `<strong id="miniCartCount">${count || 0}</strong> item${count === 1 ? "" : "s"} in cart`;
+  }
+
+  bar.style.display = count > 0 ? "block" : "none";
 }
+
 
 /* ------------------------------
    Toast UX (non-blocking feedback)

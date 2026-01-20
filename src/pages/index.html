@@ -3,7 +3,8 @@
 
 <head>
   <title>Sister Blooms | Fresh Bouquets in Cape Town</title>
-  <meta name="description" content="Bright, modern bouquets delivered in Cape Town. Customise your bouquet, add multiple items to cart, and place your order easily on WhatsApp." />
+  <meta name="description"
+    content="Bright, modern bouquets delivered in Cape Town. Customise your bouquet, add multiple items to cart, and place your order easily on WhatsApp." />
   <link rel="canonical" href="https://sibawebworks.github.io/flower-shop/" />
   <!-- @include partials/head.html -->
 </head>
@@ -14,8 +15,23 @@
   <main class="container">
     <!-- @include sections/home/hero.html -->
     <!-- @include sections/home/how-it-works.html -->
-    <!-- @include sections/home/why-us.html -->
-    <!-- @include sections/home/testimonials.html -->
+
+    <!-- Keep Home focused. “Why us” + testimonials live on their own pages now. -->
+
+    <!-- Optional: small teaser linking out (recommended) -->
+    <section class="section">
+      <div class="card">
+        <div class="section-head" style="margin-bottom: 10px;">
+          <h2 style="margin: 0;">Why customers love us</h2>
+          <a class="muted" href="./why-us.html">View more →</a>
+        </div>
+        <p class="muted" style="margin: 0;">
+          Fast WhatsApp confirmations, fresh seasonal bouquets, and Cape Town delivery.
+        </p>
+        <a class="btn" href="./why-us.html" style="margin-top: 12px;">See why us</a>
+      </div>
+    </section>
+
     <!-- @include sections/home/featured.html -->
   </main>
   <!-- @include partials/footer.html -->

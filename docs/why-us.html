@@ -2,9 +2,10 @@
 <html lang="en">
 
 <head>
-    <title>Bouquets | Sister Blooms</title>
-    <meta name="description" content="Browse our range of fresh, seasonal bouquets. Choose styles, colours, and sizes, then add your favourites to cart before ordering on WhatsApp." />
-    <link rel="canonical" href="https://sibawebworks.github.io/flower-shop/bouquets.html" />
+    <title>Why us | Sister Blooms</title>
+    <meta name="description"
+        content="Why customers love Sister Blooms — fast WhatsApp confirmations, fresh seasonal bouquets, and local Cape Town delivery." />
+    <link rel="canonical" href="https://sibawebworks.github.io/flower-shop/why-us.html" />
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 
@@ -68,29 +69,66 @@
 
     <main class="container">
         <section class="section">
-            <h2>All bouquets</h2>
-            <div id="catalogGrid" class="grid"></div>
+            <h2>Why us</h2>
+            <p class="muted">
+                Simple ordering, premium presentation, and quick confirmations — built for busy people who still want to
+                send something beautiful.
+            </p>
+        </section>
+
+        <section class="section">
+            <div class="trust-strip">
+                <div class="trust-item">
+                    <div class="trust-title">Fast responses</div>
+                    <div class="trust-text muted">Orders confirmed on WhatsApp</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-title">Fresh + seasonal</div>
+                    <div class="trust-text muted">We use what’s in bloom</div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-title">Local delivery</div>
+                    <div class="trust-text muted">Cape Town areas supported</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-head">
+                <h2>What customers say</h2>
+                <span class="muted">Real messages from happy clients</span>
+            </div>
+
+            <div class="testimonials">
+                <div class="card testimonial">
+                    <p class="quote">
+                        “The bouquet looked even better than the photos. Fast delivery and the card note was perfect.”
+                    </p>
+                    <p class="muted who">— Customer, Sea Point</p>
+                </div>
+
+                <div class="card testimonial">
+                    <p class="quote">
+                        “Super responsive on WhatsApp and helped me choose colours. My girlfriend loved it.”
+                    </p>
+                    <p class="muted who">— Customer, Gardens</p>
+                </div>
+
+                <div class="card testimonial">
+                    <p class="quote">
+                        “Beautiful flowers, neat wrapping, and everything was on time. Will definitely order again.”
+                    </p>
+                    <p class="muted who">— Customer, Claremont</p>
+                </div>
+            </div>
+
+            <div class="about-actions" style="margin-top: 14px;">
+                <a class="btn" href="./bouquets.html">Browse bouquets</a>
+                <a class="btn btn-secondary" href="./cart.html">Go to cart</a>
+            </div>
         </section>
     </main>
 
-    <script type="module">
-        import { BOUQUETS } from "./js/data.js";
-
-        const grid = document.querySelector("#catalogGrid");
-
-        grid.innerHTML = BOUQUETS
-            .map(b => `
-          <article class="card">
-            <h3>${b.name}</h3>
-            <p>${b.shortDescription}</p>
-            <div class="price">R${b.priceMin}–R${b.priceMax}</div>
-            <a class="btn" href="./bouquet.html?id=${encodeURIComponent(b.id)}">
-              Customise
-            </a>
-          </article>
-        `)
-            .join("");
-    </script>
     <footer class="container footer">
   <div class="footer-inner">
     <div>

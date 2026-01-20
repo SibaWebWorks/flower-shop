@@ -237,3 +237,59 @@ label:hover {
   font-weight: 500;
   color: var(--muted);
 }
+
+/* ==========================
+   Micro-polish: buttons + UI
+   ========================== */
+
+/* Button hierarchy */
+.btn {
+  box-shadow: none;
+}
+
+.btn-primary {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+}
+
+.btn-primary:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.btn-secondary {
+  background: rgba(17, 17, 17, 0.04);
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+.btn-secondary:hover {
+  background: rgba(17, 17, 17, 0.07);
+  border-color: rgba(17, 17, 17, 0.22);
+}
+
+/* Small button (optional utility) */
+.btn-sm {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* Make inline buttons look consistent */
+a.btn {
+  text-decoration: none !important;
+}
+
+/* Inputs feel more premium */
+select,
+input[type="text"],
+textarea {
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+select:focus,
+input[type="text"]:focus,
+textarea:focus {
+  border-color: rgba(17, 17, 17, 0.28);
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.08);
+  outline: none;
+}

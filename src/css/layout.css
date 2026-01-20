@@ -46,3 +46,20 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* ==========================
+   Micro-polish: layout rhythm
+   ========================== */
+
+.section {
+  margin-top: 34px;
+}
+
+.section-head h2 {
+  margin-bottom: 0;
+}
+
+.nav a.active {
+  background: rgba(17, 17, 17, 0.07);
+  border-color: rgba(17, 17, 17, 0.16);
+}

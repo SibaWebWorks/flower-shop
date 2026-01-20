@@ -3,7 +3,8 @@
 
 <head>
   <title>Your Cart | Sister Blooms</title>
-  <meta name="description" content="Review your selected bouquets, adjust quantities, and send your full order to Sister Blooms on WhatsApp." />
+  <meta name="description"
+    content="Review your selected bouquets, adjust quantities, and send your full order to Sister Blooms on WhatsApp." />
   <link rel="canonical" href="https://sibawebworks.github.io/flower-shop/cart.html" />
   <!-- @include partials/head.html -->
 </head>
@@ -21,8 +22,12 @@
       <div id="cartList"></div>
 
       <div class="card" style="margin-top: 14px;">
-        <p class="muted" style="margin-bottom: 10px;">
+        <p class="muted" style="margin: 0 0 10px;">
           We’ll confirm availability, delivery fee, and final total on WhatsApp.
+        </p>
+
+        <p class="muted" style="margin: 0 0 10px;">
+          Estimated bouquet total: <strong id="cartEstimate">—</strong>
         </p>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -32,8 +37,8 @@
       </div>
     </section>
   </main>
-  <!-- @include partials/footer.html -->
 
+  <!-- @include partials/footer.html -->
   <script type="module" src="./js/cart-page.js"></script>
 </body>
 

@@ -26,6 +26,12 @@ function stableKey(item) {
   return [item.id, item.size || "", item.color || "", addons].join("::");
 }
 
+function normaliseStringOrNull(v) {
+  if (v === undefined || v === null) return null;
+  const s = String(v).trim();
+  return s ? s : null;
+}
+
 export function getCart() {
   return readCart();
 }
@@ -77,5 +83,61 @@ export function updateQty(key, qty) {
 
 export function removeItem(key) {
   const cart = readCart().filter((i) => i.key !== key);
+  writeCart(cart);
+}
+
+/**
+ * Update an existing cart line item by key.
+ * IMPORTANT: size/color/addons affect the stable key.
+ * So we recompute the key and merge if it collides with another line item.
+ */
+export function updateItem(key, patch) {
+  const cart = readCart();
+  const idx = cart.findIndex((x) => x.key === key);
+  if (idx === -1) return;
+
+  const current = cart[idx];
+
+  const nextCandidate = {
+    ...current,
+    ...patch,
+  };
+
+  // Ensure clean normalised shapes
+  nextCandidate.size = normaliseStringOrNull(nextCandidate.size);
+  nextCandidate.color = normaliseStringOrNull(nextCandidate.color);
+  nextCandidate.addons = normaliseAddons(nextCandidate.addons);
+
+  // Recompute key when options change
+  const nextKey = stableKey(nextCandidate);
+
+  // If key unchanged, just write updated item
+  if (nextKey === current.key) {
+    cart[idx] = { ...nextCandidate, key: current.key };
+    writeCart(cart);
+    return;
+  }
+
+  // Key changed -> may collide with an existing line item
+  const existingIdx = cart.findIndex((x) => x.key === nextKey);
+
+  if (existingIdx !== -1) {
+    // Merge qty into the existing line item
+    const mergedQty =
+      (Number(cart[existingIdx].qty) || 0) + (Number(nextCandidate.qty) || 0);
+
+    cart[existingIdx] = {
+      ...cart[existingIdx],
+      qty: Math.max(1, mergedQty),
+    };
+
+    // Remove the old line item
+    cart.splice(idx, 1);
+    writeCart(cart);
+    return;
+  }
+
+  // No collision -> replace item with new key
+  cart[idx] = { ...nextCandidate, key: nextKey };
   writeCart(cart);
 }

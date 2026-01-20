@@ -18,12 +18,19 @@
 }
 
 .nav a {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
   padding: 10px 12px;
   border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background 150ms ease, border-color 150ms ease;
 }
 
 .nav a:hover {
-  background: rgba(255, 79, 163, 0.1);
+  background: rgba(17, 17, 17, 0.05);
+  border-color: rgba(17, 17, 17, 0.10);
   text-decoration: none;
 }
 

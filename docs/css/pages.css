@@ -201,3 +201,111 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
+
+/* ==========================
+   Bouquet detail page polish
+   ========================== */
+
+.detail {
+  display: grid;
+  gap: 14px;
+}
+
+.detail-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail-title {
+  margin: 0 0 6px;
+}
+
+.detail-sub {
+  margin: 0;
+  max-width: 70ch;
+}
+
+.detail-price {
+  text-align: right;
+  min-width: 200px;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.detail-card {
+  padding: 16px;
+}
+
+.detail-h {
+  margin: 0 0 6px;
+}
+
+.detail-help {
+  margin: 0 0 10px;
+}
+
+.pill-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 720px) {
+  .detail-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .pill-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  background: rgba(17, 17, 17, 0.03);
+  cursor: pointer;
+}
+
+.pill:hover {
+  background: rgba(17, 17, 17, 0.05);
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+.pill input {
+  margin: 0;
+}
+
+.pill:has(input:checked) {
+  background: rgba(17, 17, 17, 0.08);
+  border-color: rgba(17, 17, 17, 0.28);
+}
+
+.detail-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.hint {
+  max-width: 42ch;
+}

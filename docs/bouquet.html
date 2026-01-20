@@ -3,7 +3,8 @@
 
 <head>
     <title>Bouquet Details | Sister Blooms</title>
-    <meta name="description" content="Customise your bouquet by selecting size, colour, and add-ons. Add multiple bouquets to cart and place your order on WhatsApp." />
+    <meta name="description"
+        content="Customise your bouquet by selecting size, colour, and add-ons. Add multiple bouquets to cart and place your order on WhatsApp." />
     <link rel="canonical" href="https://sibawebworks.github.io/flower-shop/bouquet.html" />
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -71,6 +72,19 @@
             <!-- populated by JS -->
         </section>
     </main>
+
+    <!-- Sticky mini-cart (JS toggles badge + visibility) -->
+    <div class="sticky-bar" id="miniCartBar" style="display:none;">
+        <div class="container" style="padding-top: 0; padding-bottom: 0;">
+            <div class="sticky-bar-inner">
+                <div class="sticky-title">
+                    In cart: <strong id="miniCartCount">0</strong>
+                </div>
+                <a class="btn btn-primary" href="./cart.html">View cart</a>
+            </div>
+        </div>
+    </div>
+
     <footer class="container footer">
   <div class="footer-inner">
     <div>

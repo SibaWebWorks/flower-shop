@@ -5,18 +5,47 @@
       <p class="muted footer-text">
         Fresh bouquets • Cape Town delivery • Orders confirmed on WhatsApp
       </p>
+
+      <div class="footer-meta">
+        <div class="muted"><strong>Hours:</strong> Mon–Sat, 08:00–18:00</div>
+        <div class="muted"><strong>Area:</strong> Cape Town (selected areas)</div>
+      </div>
     </div>
 
     <div class="footer-links">
       <a href="./bouquets.html">Bouquets</a>
       <a href="./cart.html">Cart</a>
       <a href="./about.html">About</a>
-      <a href="./index.html#why-us">Why us</a>
       <a href="./about.html#policy">Policy</a>
+      <a href="./index.html#why-us">Why us</a>
     </div>
   </div>
 
-  <p class="muted footer-note">
-    Delivery fees depend on area and are confirmed on WhatsApp.
-  </p>
+  <div class="footer-bottom">
+    <a class="btn footer-whatsapp" href="#" id="footerWhatsAppLink" rel="noopener">
+      Questions or special requests? Message us on WhatsApp
+    </a>
+
+    <p class="muted footer-note">
+      Delivery fees depend on distance and are confirmed during WhatsApp chat. Substitutions may apply based on seasonal
+      availability.
+    </p>
+
+    <p class="muted footer-legal">
+      © <span id="footerYear"></span> Sister Blooms. All rights reserved.
+    </p>
+  </div>
 </footer>
+
+<script type="module">
+  import { SHOP } from "./js/data.js";
+
+  const a = document.querySelector("#footerWhatsAppLink");
+  if (a) {
+    a.href = `https://wa.me/${SHOP.whatsappNumber}`;
+    a.target = "_blank";
+  }
+
+  const y = document.querySelector("#footerYear");
+  if (y) y.textContent = String(new Date().getFullYear());
+</script>

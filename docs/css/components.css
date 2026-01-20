@@ -361,3 +361,68 @@ input[type="radio"] {
   background: var(--border);
   margin: 14px 0;
 }
+
+/* --------------------------------
+   NEW: Cart page helpers used by updated cart.html + cart-page.js
+-------------------------------- */
+
+.cart-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.cart-summary {
+  margin-top: 14px;
+}
+
+.cart-summary-note {
+  margin: 0 0 10px;
+}
+
+.cart-summary-estimate {
+  margin: 0 0 10px;
+}
+
+.cart-summary-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Form blocks inside cart items */
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Add-ons */
+.addon-list {
+  display: grid;
+  gap: 6px;
+}
+
+.addon-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+.addon-row:hover {
+  background: rgba(17, 17, 17, 0.03);
+}
+
+/* Qty number */
+.qtyValue {
+  min-width: 26px;
+  text-align: center;
+  font-weight: 800;
+}

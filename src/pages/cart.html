@@ -16,23 +16,27 @@
     <section class="section">
       <div class="section-head">
         <h2>Your cart</h2>
-        <button class="btn" id="clearCartBtn" type="button">Clear cart</button>
+        <button class="btn btn-secondary btn-sm" id="clearCartBtn" type="button">
+          Clear cart
+        </button>
       </div>
 
-      <div id="cartList"></div>
+      <div id="cartList" class="cart-list"></div>
 
-      <div class="card" style="margin-top: 14px;">
-        <p class="muted" style="margin: 0 0 10px;">
+      <div class="card cart-summary">
+        <p class="muted cart-summary-note">
           We’ll confirm availability, delivery fee, and final total on WhatsApp.
         </p>
 
-        <p class="muted" style="margin: 0 0 10px;">
+        <p class="muted cart-summary-estimate">
           Estimated bouquet total: <strong id="cartEstimate">—</strong>
         </p>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="btn" href="./bouquets.html">Add more bouquets</a>
-          <button class="btn" id="checkoutBtn" type="button">Send order on WhatsApp</button>
+        <div class="cart-summary-actions">
+          <a class="btn btn-secondary" href="./bouquets.html">Add more bouquets</a>
+          <button class="btn btn-primary" id="checkoutBtn" type="button">
+            Send order on WhatsApp
+          </button>
         </div>
       </div>
     </section>

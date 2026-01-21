@@ -4,6 +4,57 @@
   padding: 28px 18px;
 }
 
+/* ==========================
+   Header / brand
+   ========================== */
+
+.site-head {
+  display: grid;
+  gap: 14px;
+  align-items: start;
+}
+
+.brand {
+  display: grid;
+  gap: 4px;
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-name {
+  font-family: var(--font-head);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 34px;
+  line-height: 1.05;
+}
+
+.brand-sub {
+  margin: 0;
+  font-size: 14px;
+}
+
+.nav a i {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+@media (min-width: 900px) {
+  .site-head {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .nav {
+    justify-content: flex-end;
+  }
+}
+
 /* Single source of truth for section spacing */
 .section {
   margin-top: 34px;
@@ -97,4 +148,38 @@
 
 .mt-14 {
   margin-top: 14px;
+}
+
+/* ==========================
+   Header layout helpers
+   ========================== */
+
+.site-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  display: grid;
+  gap: 6px;
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.brand-link:hover {
+  text-decoration: none;
+}
+
+.brand-title {
+  margin: 0;
+}
+
+.brand-subtitle {
+  margin: 0;
 }

@@ -19,7 +19,6 @@
 
 <!-- Font Awesome (icons when needed) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
 <!-- Favicon -->
 <link rel="icon" href="./assets/icons/rose-shape-svgrepo-com.svg" type="image/svg+xml" />
 
@@ -47,21 +46,26 @@
 </head>
 
 <body>
-    <header class="container">
-  <h1 id="shopName">Sister Blooms</h1>
-  <p class="muted">Fresh bouquets • Order on WhatsApp</p>
+    <header class="container site-head">
+  <div class="brand">
+    <a class="brand-link" href="./index.html" aria-label="Sister Blooms home">
+      <span class="brand-name" id="shopName">Sister Blooms</span>
+    </a>
+    <p class="muted brand-sub">Fresh bouquets • Cape Town</p>
+  </div>
 
-  <nav class="nav">
-    <a href="./index.html">Home</a>
-    <a href="./bouquets.html">Bouquets</a>
+  <nav class="nav" aria-label="Primary navigation">
+    <a href="./index.html"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="./bouquets.html"><i class="fa-solid fa-seedling"></i> Bouquets</a>
 
     <a href="./cart.html">
-      Cart <span class="badge" id="cartCount" aria-label="Cart item count"></span>
+      <i class="fa-solid fa-bag-shopping"></i> Cart
+      <span class="badge" id="cartCount" aria-label="Cart item count"></span>
     </a>
 
-    <a href="./why-us.html">Why us</a>
-    <a href="./about.html">About</a>
-    <a href="./policy.html">Policy</a>
+    <a href="./why-us.html"><i class="fa-solid fa-star"></i> Why us</a>
+    <a href="./about.html"><i class="fa-solid fa-circle-info"></i> About</a>
+    <a href="./policy.html"><i class="fa-solid fa-file-lines"></i> Policy</a>
   </nav>
 </header>
 

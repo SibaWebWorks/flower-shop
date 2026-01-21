@@ -35,7 +35,7 @@ function setActiveNav() {
     const hrefNoPrefix = href.replace(/^\.\//, "");
     const hrefFile = hrefNoPrefix.split("?")[0].split("#")[0];
 
-    // Special case: if link is an in-page section on index.html, only active on index.html
+    // If link is an in-page section on index.html, only active on index.html
     if (hrefNoPrefix.startsWith("index.html#")) {
       if (currentFile === "index.html") a.classList.add("active");
       return;
@@ -46,14 +46,19 @@ function setActiveNav() {
   });
 }
 
+function refreshHeader() {
+  updateCartBadge();
+  setActiveNav();
+}
+
 // Initial
-updateCartBadge();
-setActiveNav();
+refreshHeader();
 
 // Keep in sync if cart updates in another tab
 window.addEventListener("storage", (e) => {
-  if (e.key === CART_KEY) updateCartBadge();
+  if (e.key === CART_KEY) refreshHeader();
 });
 
 // Optional: allow other scripts to trigger refresh
 window.__sbUpdateCartBadge = updateCartBadge;
+window.__sbRefreshHeader = refreshHeader;

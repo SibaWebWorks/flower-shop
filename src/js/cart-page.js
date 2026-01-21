@@ -25,13 +25,20 @@ function updateHeaderCartBadge() {
 }
 
 function renderEmpty() {
+  if (!cartList) return;
+
+  cartList.classList.add("cart-list");
   cartList.innerHTML = `
-    <div class="card">
-      <h3 style="margin:0 0 6px;">Your cart is empty</h3>
-      <p class="muted" style="margin:0 0 10px;">
-        Browse bouquets and add as many as you like, then send one WhatsApp order from here.
-      </p>
-      <a class="btn btn-primary" href="./bouquets.html">Browse bouquets</a>
+    <div class="card stack">
+      <div class="stack">
+        <h3 class="m-0">Your cart is empty</h3>
+        <p class="muted m-0">
+          Browse bouquets and add as many as you like, then send one WhatsApp order from here.
+        </p>
+      </div>
+      <div class="row mt-10">
+        <a class="btn btn-primary" href="./bouquets.html">Browse bouquets</a>
+      </div>
     </div>
   `;
 
@@ -43,6 +50,8 @@ function renderEmpty() {
 function render() {
   const cart = getCart();
   if (!cartList) return;
+
+  cartList.classList.add("cart-list");
 
   if (!cart.length) {
     renderEmpty();
@@ -67,9 +76,9 @@ function render() {
         .map((a) => {
           const checked = (i.addons || []).includes(a) ? "checked" : "";
           return `
-            <label class="cart-addon">
+            <label class="addon-row">
               <input type="checkbox" data-addon="${a}" data-key="${i.key}" ${checked} />
-              ${a}
+              <span>${a}</span>
             </label>
           `;
         })
@@ -79,51 +88,48 @@ function render() {
       const lineMax = (i.priceMax || 0) * (i.qty || 1);
 
       return `
-        <div class="card cart-item" data-key="${i.key}">
-          <div class="cart-item-top">
-            <div class="cart-item-meta">
-              <h3 style="margin:0;">${i.name}</h3>
-              <p class="muted" style="margin:0;">
-                Est. ${money(i.priceMin)}–${money(i.priceMax)} each
-              </p>
-            </div>
-
-            <button class="btn btn-danger btn-sm removeBtn" data-key="${i.key}" type="button">
-              Remove
-            </button>
-          </div>
-
-          <div class="cart-controls">
-            <div class="cart-field">
-              <div class="cart-label muted">Size</div>
-              <select class="selectInput" data-field="size" data-key="${i.key}">
-                ${sizeOptions || `<option value="">N/A</option>`}
-              </select>
-            </div>
-
-            <div class="cart-field">
-              <div class="cart-label muted">Color</div>
-              <select class="selectInput" data-field="color" data-key="${i.key}">
-                ${colorOptions || `<option value="">N/A</option>`}
-              </select>
-            </div>
-
-            <div class="cart-field">
-              <div class="cart-label muted">Add-ons</div>
-              <div class="cart-addons">
-                ${addonOptions || `<div class="muted">No add-ons available.</div>`}
+        <div class="card">
+          <div class="cart-item">
+            <div class="cart-item-top">
+              <div class="cart-item-meta">
+                <h3 class="m-0">${i.name}</h3>
+                <p class="muted m-0">Est. ${money(i.priceMin)}–${money(i.priceMax)} each</p>
               </div>
+              <button class="btn btn-danger removeBtn" data-key="${i.key}" type="button">Remove</button>
             </div>
 
-            <div class="cart-qty">
-              <span class="muted">Qty</span>
-              <button class="btn btn-secondary btn-sm qtyBtn" data-delta="-1" data-key="${i.key}" type="button">−</button>
-              <span class="cart-qty-value">${i.qty || 1}</span>
-              <button class="btn btn-secondary btn-sm qtyBtn" data-delta="1" data-key="${i.key}" type="button">+</button>
+            <div class="cart-controls">
+              <div class="field">
+                <label class="muted field-label">Size</label>
+                <select class="selectInput" data-field="size" data-key="${i.key}">
+                  ${sizeOptions || `<option value="">N/A</option>`}
+                </select>
+              </div>
 
-              <span class="cart-line-total">
-                Line est: <strong>${money(lineMin)}–${money(lineMax)}</strong>
-              </span>
+              <div class="field">
+                <label class="muted field-label">Color</label>
+                <select class="selectInput" data-field="color" data-key="${i.key}">
+                  ${colorOptions || `<option value="">N/A</option>`}
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="muted field-label">Add-ons</label>
+                <div class="addon-list">
+                  ${addonOptions || `<div class="muted">No add-ons available.</div>`}
+                </div>
+              </div>
+
+              <div class="cart-qty">
+                <span class="muted">Qty</span>
+                <button class="btn btn-sm qtyBtn" data-delta="-1" data-key="${i.key}" type="button">−</button>
+                <span class="cart-qty-value">${i.qty || 1}</span>
+                <button class="btn btn-sm qtyBtn" data-delta="1" data-key="${i.key}" type="button">+</button>
+
+                <span class="cart-line-total">
+                  Line est: <strong>${money(lineMin)}–${money(lineMax)}</strong>
+                </span>
+              </div>
             </div>
           </div>
         </div>

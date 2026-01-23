@@ -4,25 +4,36 @@
   padding: 28px 18px;
 }
 
+/* Single source of truth for section spacing */
+.section {
+  margin-top: 34px;
+}
+
 /* ==========================
-   Header / brand
+   Header / brand (LOCKED)
    ========================== */
 
 .site-head {
   display: grid;
   gap: 14px;
   align-items: start;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
 }
 
 .brand {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 
 .brand-link {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
+}
+
+.brand-link:hover {
   text-decoration: none;
 }
 
@@ -39,11 +50,54 @@
   font-size: 14px;
 }
 
+/* Nav */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
 .nav a i {
   font-size: 14px;
   opacity: 0.85;
 }
 
+.nav a:hover {
+  background: rgba(17, 17, 17, 0.05);
+  border-color: rgba(17, 17, 17, 0.10);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* ACTIVE TAB: supported by header.js adding `.active` */
+.nav a.active {
+  background: rgba(17, 17, 17, 0.08);
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+/* Make the cart badge sit nicely */
+.nav a .badge {
+  margin-left: 2px;
+}
+
+/* Desktop alignment */
 @media (min-width: 900px) {
   .site-head {
     grid-template-columns: 1fr auto;
@@ -55,44 +109,10 @@
   }
 }
 
-/* Single source of truth for section spacing */
-.section {
-  margin-top: 34px;
-}
+/* ==========================
+   Section headers / grids
+   ========================== */
 
-.nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-}
-
-.nav a {
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.01em;
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
-}
-
-.nav a:hover {
-  background: rgba(17, 17, 17, 0.05);
-  border-color: rgba(17, 17, 17, 0.10);
-  text-decoration: none;
-}
-
-/* ACTIVE TAB: supported by header.js adding `.active` */
-.nav a.active {
-  background: rgba(17, 17, 17, 0.08);
-  border-color: rgba(17, 17, 17, 0.18);
-}
-
-/* Headings in section headers feel tighter */
 .section-head {
   display: flex;
   align-items: baseline;
@@ -118,7 +138,10 @@
   }
 }
 
-/* Small utility layout helpers (used to replace inline styles gradually) */
+/* ==========================
+   Small utility layout helpers
+   ========================== */
+
 .stack {
   display: grid;
   gap: 12px;
@@ -148,38 +171,4 @@
 
 .mt-14 {
   margin-top: 14px;
-}
-
-/* ==========================
-   Header layout helpers
-   ========================== */
-
-.site-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.brand {
-  display: grid;
-  gap: 6px;
-}
-
-.brand-link {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.brand-link:hover {
-  text-decoration: none;
-}
-
-.brand-title {
-  margin: 0;
-}
-
-.brand-subtitle {
-  margin: 0;
 }

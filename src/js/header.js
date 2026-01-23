@@ -27,6 +27,7 @@ function setActiveNav() {
 
   document.querySelectorAll("nav.nav a").forEach((a) => {
     a.classList.remove("active");
+    a.removeAttribute("aria-current");
 
     const href = (a.getAttribute("href") || "").trim();
     if (!href) return;
@@ -37,12 +38,18 @@ function setActiveNav() {
 
     // If link is an in-page section on index.html, only active on index.html
     if (hrefNoPrefix.startsWith("index.html#")) {
-      if (currentFile === "index.html") a.classList.add("active");
+      if (currentFile === "index.html") {
+        a.classList.add("active");
+        a.setAttribute("aria-current", "page");
+      }
       return;
     }
 
     // Normal page match
-    if (hrefFile === currentFile) a.classList.add("active");
+    if (hrefFile === currentFile) {
+      a.classList.add("active");
+      a.setAttribute("aria-current", "page");
+    }
   });
 }
 

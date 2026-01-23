@@ -24,6 +24,40 @@ function updateHeaderCartBadge() {
   if (typeof window.__sbUpdateCartBadge === "function") window.__sbUpdateCartBadge();
 }
 
+/* ------------------------------
+   Toast UX (non-blocking feedback)
+-------------------------------- */
+
+function ensureToast() {
+  let toast = document.querySelector("#sbToast");
+  if (toast) return toast;
+
+  toast = document.createElement("div");
+  toast.id = "sbToast";
+  toast.className = "toast";
+  toast.innerHTML = `
+    <span id="sbToastTitle">Done</span>
+    <span class="toast-muted" id="sbToastMeta"></span>
+  `;
+  document.body.appendChild(toast);
+  return toast;
+}
+
+function showToast(title = "Done", meta = "") {
+  const toast = ensureToast();
+  const titleEl = toast.querySelector("#sbToastTitle");
+  const metaEl = toast.querySelector("#sbToastMeta");
+
+  if (titleEl) titleEl.textContent = title;
+  if (metaEl) metaEl.textContent = meta;
+
+  toast.classList.add("show");
+  window.clearTimeout(window.__sbToastTimer);
+  window.__sbToastTimer = window.setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2200);
+}
+
 function renderEmpty() {
   if (!cartList) return;
 
@@ -147,9 +181,18 @@ function render() {
 function wire() {
   document.querySelectorAll(".removeBtn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      removeItem(e.currentTarget.dataset.key);
+      const key = e.currentTarget.dataset.key;
+
+      // Grab name before removal (for toast)
+      const cart = getCart();
+      const item = cart.find((x) => x.key === key);
+      const label = item?.name || "Item";
+
+      removeItem(key);
       updateHeaderCartBadge();
       render();
+
+      showToast("Removed", label);
     });
   });
 
@@ -226,9 +269,13 @@ function buildWhatsAppMessage() {
 }
 
 clearBtn?.addEventListener("click", () => {
+  const countBefore = getCart().length;
+
   clearCart();
   updateHeaderCartBadge();
   render();
+
+  if (countBefore > 0) showToast("Cart cleared", "Your cart is now empty");
 });
 
 checkoutBtn?.addEventListener("click", () => {

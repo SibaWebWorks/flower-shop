@@ -1,6 +1,10 @@
 import { BOUQUETS } from "./data.js";
 import { addToCart, getCartCount } from "./cart.js";
 
+/* ------------------------------
+   Helpers
+-------------------------------- */
+
 function getBouquetId() {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
@@ -23,26 +27,32 @@ function updateHeaderCartBadge() {
   }
 }
 
+/* ------------------------------
+   Mini cart bar
+-------------------------------- */
+
 function updateMiniCartBar() {
   const bar = document.querySelector("#miniCartBar");
-  const countEl = document.querySelector("#miniCartCount");
-  if (!bar || !countEl) return;
+  if (!bar) return;
 
   const count = getCartCount();
-  countEl.textContent = String(count || 0);
+
+  const countEl = bar.querySelector("#miniCartCount");
+  if (countEl) countEl.textContent = String(count || 0);
 
   const title = bar.querySelector(".sticky-title");
   if (title) {
-    title.innerHTML = `<strong id="miniCartCount">${count || 0}</strong> item${count === 1 ? "" : "s"} in cart`;
+    title.textContent = `${count || 0} item${count === 1 ? "" : "s"} in cart`;
   }
 
   bar.style.display = count > 0 ? "block" : "none";
 }
 
-
 /* ------------------------------
    Toast UX (non-blocking feedback)
 -------------------------------- */
+
+let toastTimer = null;
 
 function ensureToast() {
   let toast = document.querySelector("#sbToast");
@@ -51,6 +61,8 @@ function ensureToast() {
   toast = document.createElement("div");
   toast.id = "sbToast";
   toast.className = "toast";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
   toast.innerHTML = `
     <span id="sbToastTitle">Added to cart</span>
     <span class="toast-muted" id="sbToastMeta"></span>
@@ -68,8 +80,9 @@ function showToast(title = "Added to cart", meta = "") {
   if (metaEl) metaEl.textContent = meta;
 
   toast.classList.add("show");
-  window.clearTimeout(window.__sbToastTimer);
-  window.__sbToastTimer = window.setTimeout(() => {
+
+  if (toastTimer) window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
     toast.classList.remove("show");
   }, 2200);
 }
@@ -108,6 +121,8 @@ function renderOptionPills({ name, options, type, selectedName }) {
 
 function renderBouquet(bouquet) {
   const container = document.querySelector("#bouquetDetail");
+
+  if (!container) return;
 
   if (!bouquet) {
     container.innerHTML = "<p>Sorry, bouquet not found.</p>";
@@ -254,10 +269,8 @@ function onAddToCart() {
   updateHeaderCartBadge();
   updateMiniCartBar();
 
-  // Stay on page, give feedback, allow multiple adds
   showToast("Added to cart", bouquet.name);
 
-  // OPTIONAL: if your mini cart has a CTA element, reveal/enable it
   const viewBtn = document.querySelector("#miniCartViewBtn");
   if (viewBtn) viewBtn.style.display = "inline-flex";
 }

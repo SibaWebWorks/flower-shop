@@ -73,24 +73,25 @@
 
   <main class="container">
     <section class="section">
-      <div class="section-head row-between">
+      <div class="section-head row-between cart-head">
         <h2 class="m-0">Your cart</h2>
         <button class="btn btn-danger" id="clearCartBtn" type="button">Clear cart</button>
       </div>
 
-      <div id="cartList" class="stack mt-14"></div>
+      <!-- JS will populate this -->
+      <div id="cartList" class="cart-list"></div>
 
-      <div class="card cart-summary mt-14">
+      <div class="card cart-summary">
         <div class="stack">
-          <p class="muted m-0">
+          <p class="muted m-0 cart-summary-note">
             We’ll confirm availability, delivery fee, and final total on WhatsApp.
           </p>
 
-          <p class="muted m-0">
+          <p class="muted m-0 cart-summary-total">
             Estimated bouquet total: <strong id="cartEstimate">—</strong>
           </p>
 
-          <div class="row mt-10">
+          <div class="cart-summary-actions">
             <a class="btn btn-secondary" href="./bouquets.html">Add more bouquets</a>
             <button class="btn btn-primary" id="checkoutBtn" type="button">
               Send order on WhatsApp

@@ -50,7 +50,48 @@
   font-size: 14px;
 }
 
-/* Nav */
+/* --------------------------
+   Mobile menu button
+   -------------------------- */
+
+.menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  background: rgba(17, 17, 17, 0.04);
+  color: var(--text);
+
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 13px;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.menu-btn i {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.menu-btn:hover {
+  background: rgba(17, 17, 17, 0.07);
+  border-color: rgba(17, 17, 17, 0.22);
+  transform: translateY(-1px);
+}
+
+/* --------------------------
+   Nav
+   -------------------------- */
+
 .nav {
   display: flex;
   flex-wrap: wrap;
@@ -97,11 +138,70 @@
   margin-left: 2px;
 }
 
+/* --------------------------
+   Mobile dropdown behavior (animated)
+   -------------------------- */
+
+/* On small screens: header becomes 2-column (brand + menu), nav drops below */
+@media (max-width: 899px) {
+  .site-head {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  /* NAV as animated dropdown panel (no display:none) */
+  .nav {
+    grid-column: 1 / -1;
+
+    /* layout */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+
+    /* spacing + divider */
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+
+    /* animation state (closed) */
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+    overflow: hidden;
+    pointer-events: none;
+
+    transition:
+      max-height 220ms ease,
+      opacity 180ms ease,
+      transform 220ms ease;
+  }
+
+  /* Open state */
+  .site-head.nav-open .nav {
+    max-height: 420px;
+    /* enough for links; avoid huge value */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Make links easier to tap on mobile */
+  .nav a {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 14px;
+  }
+}
+
 /* Desktop alignment */
 @media (min-width: 900px) {
   .site-head {
     grid-template-columns: 1fr auto;
     align-items: center;
+  }
+
+  .menu-btn {
+    display: none;
   }
 
   .nav {

@@ -1,6 +1,7 @@
 import { getCartCount } from "./cart.js";
 
 const CART_KEY = "sb_cart_v1";
+const DESKTOP_MIN_WIDTH = 900;
 
 function updateCartBadge() {
   const el = document.querySelector("#cartCount");
@@ -53,13 +54,67 @@ function setActiveNav() {
   });
 }
 
+/* ------------------------------
+   Mobile menu (dropdown)
+-------------------------------- */
+
+function isDesktop() {
+  return window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`).matches;
+}
+
+function setupMobileMenu() {
+  const header = document.querySelector(".site-head");
+  const btn = document.querySelector("#menuBtn");
+  const nav = document.querySelector("#primaryNav");
+
+  if (!header || !btn || !nav) return;
+
+  function setOpen(open) {
+    header.classList.toggle("nav-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+
+    const icon = btn.querySelector("i");
+    if (icon) {
+      icon.classList.toggle("fa-bars", !open);
+      icon.classList.toggle("fa-xmark", open);
+    }
+  }
+
+  // Initial: closed
+  setOpen(false);
+
+  btn.addEventListener("click", () => {
+    const isOpen = header.classList.contains("nav-open");
+    setOpen(!isOpen);
+  });
+
+  // Close menu when clicking a nav link (mobile only)
+  nav.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("click", () => {
+      if (!isDesktop()) setOpen(false);
+    });
+  });
+
+  // Close if switching to desktop
+  window.addEventListener("resize", () => {
+    if (isDesktop()) setOpen(false);
+  });
+
+  // Close on Escape
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+}
+
 function refreshHeader() {
   updateCartBadge();
   setActiveNav();
 }
 
-// Initial
+// Boot
 refreshHeader();
+setupMobileMenu();
 
 // Keep in sync if cart updates in another tab
 window.addEventListener("storage", (e) => {

@@ -5,6 +5,185 @@ const cartList = document.querySelector("#cartList");
 const clearBtn = document.querySelector("#clearCartBtn");
 const checkoutBtn = document.querySelector("#checkoutBtn");
 
+/* ------------------------------
+   Delivery Date (Cart-level)
+-------------------------------- */
+
+const DELIVERY_DATE_KEY = "sb_delivery_date_v1";
+
+const deliveryDateBlock = document.querySelector("#deliveryDateBlock");
+const deliveryTodayBtn = document.querySelector("#deliveryTodayBtn");
+const deliveryTomorrowBtn = document.querySelector("#deliveryTomorrowBtn");
+const deliveryPickBtn = document.querySelector("#deliveryPickBtn");
+const deliveryDateValue = document.querySelector("#deliveryDateValue");
+const deliveryDateHint = document.querySelector("#deliveryDateHint");
+const deliveryDatePicker = document.querySelector("#deliveryDatePicker");
+const deliveryDateInput = document.querySelector("#deliveryDateInput");
+
+function setDeliveryDateVisible(visible) {
+  if (!deliveryDateBlock) return;
+  deliveryDateBlock.style.display = visible ? "block" : "none";
+}
+
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+// Returns YYYY-MM-DD (local)
+function toISODateLocal(d) {
+  const year = d.getFullYear();
+  const month = pad2(d.getMonth() + 1);
+  const day = pad2(d.getDate());
+  return `${year}-${month}-${day}`;
+}
+
+function formatNiceDate(iso) {
+  // iso is YYYY-MM-DD
+  const parts = String(iso || "").split("-");
+  if (parts.length !== 3) return iso;
+
+  const [y, m, d] = parts.map((x) => Number(x));
+  if (!y || !m || !d) return iso;
+
+  const date = new Date(y, m - 1, d);
+  try {
+    return date.toLocaleDateString(undefined, {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function readDeliveryDate() {
+  const raw = localStorage.getItem(DELIVERY_DATE_KEY);
+  return raw ? String(raw) : "";
+}
+
+function writeDeliveryDate(isoDate) {
+  if (!isoDate) {
+    localStorage.removeItem(DELIVERY_DATE_KEY);
+    return;
+  }
+  localStorage.setItem(DELIVERY_DATE_KEY, String(isoDate));
+}
+
+function clearDeliveryDate() {
+  localStorage.removeItem(DELIVERY_DATE_KEY);
+  updateDeliveryUI();
+}
+
+function setDeliveryDate(isoDate) {
+  const todayIso = toISODateLocal(new Date());
+
+  // Prevent past dates (soft guard)
+  if (isoDate && isoDate < todayIso) {
+    isoDate = todayIso;
+  }
+
+  writeDeliveryDate(isoDate);
+  updateDeliveryUI();
+}
+
+function setActiveDeliveryButton(which) {
+  // which: "today" | "tomorrow" | "pick" | ""
+  const map = [
+    [deliveryTodayBtn, which === "today"],
+    [deliveryTomorrowBtn, which === "tomorrow"],
+    [deliveryPickBtn, which === "pick"],
+  ];
+
+  map.forEach(([btn, active]) => {
+    if (!btn) return;
+    btn.classList.toggle("is-active", !!active);
+  });
+}
+
+function updateDeliveryUI() {
+  const selected = readDeliveryDate();
+
+  const today = new Date();
+  const todayIso = toISODateLocal(today);
+  const tomorrowIso = toISODateLocal(
+    new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+  );
+
+  // Configure date input constraints
+  if (deliveryDateInput) {
+    deliveryDateInput.min = todayIso;
+    deliveryDateInput.value = selected || "";
+  }
+
+  if (!deliveryDateValue) return;
+
+  if (!selected) {
+    deliveryDateValue.textContent = "Not selected";
+    if (deliveryDateHint) deliveryDateHint.textContent = "Choose a day for delivery.";
+    setActiveDeliveryButton("");
+    if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+    return;
+  }
+
+  deliveryDateValue.textContent = formatNiceDate(selected);
+
+  if (selected === todayIso) setActiveDeliveryButton("today");
+  else if (selected === tomorrowIso) setActiveDeliveryButton("tomorrow");
+  else setActiveDeliveryButton("pick");
+
+  if (deliveryDateHint) deliveryDateHint.textContent = "You can change this anytime.";
+}
+
+function wireDeliveryDate() {
+  if (deliveryTodayBtn) {
+    deliveryTodayBtn.addEventListener("click", () => {
+      setDeliveryDate(toISODateLocal(new Date()));
+      if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+      showToast("Delivery date", "Today selected");
+    });
+  }
+
+  if (deliveryTomorrowBtn) {
+    deliveryTomorrowBtn.addEventListener("click", () => {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      setDeliveryDate(toISODateLocal(d));
+      if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+      showToast("Delivery date", "Tomorrow selected");
+    });
+  }
+
+  if (deliveryPickBtn) {
+    deliveryPickBtn.addEventListener("click", () => {
+      if (!deliveryDatePicker || !deliveryDateInput) return;
+
+      const isOpen = deliveryDatePicker.style.display !== "none";
+      deliveryDatePicker.style.display = isOpen ? "none" : "block";
+
+      if (!isOpen) deliveryDateInput.focus();
+
+      setActiveDeliveryButton("pick");
+    });
+  }
+
+  if (deliveryDateInput) {
+    deliveryDateInput.addEventListener("change", (e) => {
+      const iso = e.currentTarget.value;
+      if (!iso) return;
+      setDeliveryDate(iso);
+      if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+      showToast("Delivery date", formatNiceDate(iso));
+    });
+  }
+
+  updateDeliveryUI();
+}
+
+/* ------------------------------
+   Money + totals
+-------------------------------- */
+
 function money(n) {
   return `R${Number(n).toFixed(0)}`;
 }
@@ -67,6 +246,8 @@ function showToast(title = "Done", meta = "") {
 function renderEmpty() {
   if (!cartList) return;
 
+  setDeliveryDateVisible(false);
+
   cartList.classList.add("cart-list");
   cartList.innerHTML = `
     <div class="card stack">
@@ -92,13 +273,8 @@ function renderEmpty() {
 -------------------------------- */
 
 function resolveItemImage(item, bouquet) {
-  // Prefer stored item.image (variant-specific)
   if (item?.image) return item.image;
-
-  // Fallback: compute from bouquet + selected colour
   if (bouquet) return getBouquetImage(bouquet, item?.color || null);
-
-  // Last resort: nothing
   return "";
 }
 
@@ -113,6 +289,8 @@ function render() {
     return;
   }
 
+  setDeliveryDateVisible(true);
+  updateDeliveryUI();
   setCheckoutEnabled(true);
 
   cartList.innerHTML = cart
@@ -151,12 +329,11 @@ function render() {
             <div class="cart-item-top">
               <div class="cart-item-meta">
                 <div class="cart-item-head">
-                  ${
-                    imgSrc
-                      ? `<img class="cart-thumb" src="./${String(imgSrc).replace(/^\.\//, "")}" alt="${imgAlt}" loading="lazy"
+                  ${imgSrc
+          ? `<img class="cart-thumb" src="./${String(imgSrc).replace(/^\.\//, "")}" alt="${imgAlt}" loading="lazy"
                            onerror="this.style.display='none';" />`
-                      : ""
-                  }
+          : ""
+        }
 
                   <div class="cart-item-titleblock">
                     <h3 class="m-0">${i.name}</h3>
@@ -228,6 +405,10 @@ function wire() {
       const label = item?.name || "Item";
 
       removeItem(key);
+
+      // If cart becomes empty, clear delivery date too (clean UX)
+      if (!getCart().length) clearDeliveryDate();
+
       updateHeaderCartBadge();
       render();
 
@@ -257,7 +438,6 @@ function wire() {
       const field = e.currentTarget.dataset.field;
       const value = e.currentTarget.value;
 
-      // If user changed colour, update the variant image too
       if (field === "color") {
         const cart = getCart();
         const item = cart.find((x) => x.key === key);
@@ -304,8 +484,16 @@ function buildWhatsAppMessage() {
   if (!cart.length) return null;
 
   const est = getEstimate(cart);
+  const deliveryDate = readDeliveryDate();
 
-  const lines = ["Hi, I’d like to place an order.", " ", "Items:"];
+  const lines = ["Hi, I’d like to place an order.", " "];
+
+  if (deliveryDate) {
+    lines.push(`Delivery date: ${formatNiceDate(deliveryDate)} (${deliveryDate})`);
+    lines.push(" ");
+  }
+
+  lines.push("Items:");
 
   cart.forEach((i, idx) => {
     lines.push(`${idx + 1}) ${i.name} (Qty: ${i.qty || 1})`);
@@ -331,6 +519,8 @@ clearBtn?.addEventListener("click", () => {
   const countBefore = getCart().length;
 
   clearCart();
+  clearDeliveryDate();
+
   updateHeaderCartBadge();
   render();
 
@@ -344,4 +534,9 @@ checkoutBtn?.addEventListener("click", () => {
   window.open(url, "_blank");
 });
 
+/* ------------------------------
+   Boot
+-------------------------------- */
+
+wireDeliveryDate();
 render();

@@ -100,6 +100,29 @@
             We’ll confirm availability, delivery fee, and final total on WhatsApp.
           </p>
 
+          <!-- Delivery date (hidden until cart has items) -->
+          <div class="delivery-date card-soft" id="deliveryDateBlock" style="display:none;">
+            <div class="delivery-date-head">
+              <div>
+                <p class="m-0 delivery-date-title">Delivery date</p>
+                <p class="muted m-0" id="deliveryDateHint">Choose a day for delivery.</p>
+              </div>
+              <p class="m-0 delivery-date-value" id="deliveryDateValue">Not selected</p>
+            </div>
+
+            <div class="btn-group" role="group" aria-label="Choose delivery date">
+              <button class="btn btn-secondary" type="button" id="deliveryTodayBtn">Today</button>
+              <button class="btn btn-secondary" type="button" id="deliveryTomorrowBtn">Tomorrow</button>
+              <button class="btn btn-secondary" type="button" id="deliveryPickBtn">Pick a date</button>
+            </div>
+
+            <!-- Hidden date input toggled by Pick a date -->
+            <div class="delivery-date-picker" id="deliveryDatePicker" style="display:none;">
+              <label class="muted field-label" for="deliveryDateInput">Choose date</label>
+              <input id="deliveryDateInput" type="date" />
+            </div>
+          </div>
+
           <p class="muted m-0 cart-summary-total">
             Estimated bouquet total: <strong id="cartEstimate">—</strong>
           </p>

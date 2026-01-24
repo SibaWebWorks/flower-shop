@@ -1,4 +1,5 @@
-// js/data.js
+// src/js/data.js
+
 export const SHOP = {
     name: "Sister Blooms",
     whatsappNumber: "27781234567", // SA format: country code + number, no + or spaces
@@ -20,14 +21,54 @@ export const SHOP = {
         "Kenilworth",
         "Wynberg",
         "Bellville (limited slots)",
-        "Durbanville (limited slots)"
+        "Durbanville (limited slots)",
     ],
     deliveryNotes: [
         "Same-day delivery for CBD/Atlantic Seaboard if ordered before 12:00.",
         "Other areas: 24-hour notice recommended.",
-        "Delivery fee depends on distance (confirmed on WhatsApp)."
-    ]
+        "Delivery fee depends on distance (confirmed on WhatsApp).",
+    ],
 };
+
+/**
+ * Turn a display color into a filename-safe slug.
+ * "Blush Pink" -> "blush-pink"
+ * "Valentine’s Red" -> "valentines-red"
+ */
+export function slugifyColor(value) {
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[’']/g, "") // remove apostrophes
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+}
+
+/**
+ * Return the best image for a bouquet based on selected color.
+ * - If bouquet.colorImages has a match, use it
+ * - Else fall back to bouquet.defaultImage
+ * - Else fall back to legacy bouquet.image
+ */
+export function getBouquetImage(bouquet, color) {
+    if (!bouquet) return "";
+
+    const selected = (color || "").trim();
+
+    // 1) explicit mapping (best)
+    if (selected && bouquet.colorImages && bouquet.colorImages[selected]) {
+        return bouquet.colorImages[selected];
+    }
+
+    // 2) try slug-based guess (useful if you keep folders consistent)
+    if (selected && bouquet.imageBase) {
+        const slug = slugifyColor(selected);
+        if (slug) return `${bouquet.imageBase}/${slug}.svg`;
+    }
+
+    // 3) default
+    return bouquet.defaultImage || bouquet.image || "";
+}
 
 export const BOUQUETS = [
     {
@@ -42,8 +83,19 @@ export const BOUQUETS = [
         occasions: ["Birthday", "Anniversary", "Just Because"],
         addons: ["Chocolates", "Card Note", "Fairy Lights"],
         leadTimeHours: 6,
-        image: "assets/images/blush-roses-mini.jpg",
-        featured: true
+
+        // Legacy (keep for compatibility)
+        image: "assets/images/bouquets/blush-roses/default.svg",
+
+        // New image system
+        imageBase: "assets/images/bouquets/blush-roses",
+        defaultImage: "assets/images/bouquets/blush-roses/default.svg",
+        colorImages: {
+            "Blush Pink": "assets/images/bouquets/blush-roses/blush-pink.svg",
+            White: "assets/images/bouquets/blush-roses/white.svg",
+        },
+
+        featured: true,
     },
     {
         id: "red-roses-classic",
@@ -57,8 +109,16 @@ export const BOUQUETS = [
         occasions: ["Anniversary", "Valentine’s", "Date Night"],
         addons: ["Chocolates", "Card Note", "Balloon"],
         leadTimeHours: 12,
-        image: "assets/images/red-roses-classic.jpg",
-        featured: true
+
+        image: "assets/images/bouquets/red-roses/default.svg",
+
+        imageBase: "assets/images/bouquets/red-roses",
+        defaultImage: "assets/images/bouquets/red-roses/default.svg",
+        colorImages: {
+            Red: "assets/images/bouquets/red-roses/red.svg",
+        },
+
+        featured: true,
     },
     {
         id: "pastel-mix-wrap",
@@ -72,8 +132,17 @@ export const BOUQUETS = [
         occasions: ["Birthday", "Congrats", "Mother’s Day"],
         addons: ["Card Note", "Chocolates", "Balloon"],
         leadTimeHours: 12,
-        image: "assets/images/pastel-mix-wrap.jpg",
-        featured: true
+
+        image: "assets/images/bouquets/pastel-mix/default.svg",
+
+        imageBase: "assets/images/bouquets/pastel-mix",
+        defaultImage: "assets/images/bouquets/pastel-mix/default.svg",
+        colorImages: {
+            Pastel: "assets/images/bouquets/pastel-mix/pastel.svg",
+            Mixed: "assets/images/bouquets/pastel-mix/mixed.svg",
+        },
+
+        featured: true,
     },
     {
         id: "sunshine-gerberas",
@@ -87,8 +156,18 @@ export const BOUQUETS = [
         occasions: ["Get Well", "Congrats", "Just Because"],
         addons: ["Card Note", "Vase"],
         leadTimeHours: 8,
-        image: "assets/images/sunshine-gerberas.jpg",
-        featured: false
+
+        image: "assets/images/bouquets/sunshine-gerberas/default.svg",
+
+        imageBase: "assets/images/bouquets/sunshine-gerberas",
+        defaultImage: "assets/images/bouquets/sunshine-gerberas/default.svg",
+        colorImages: {
+            Yellow: "assets/images/bouquets/sunshine-gerberas/yellow.svg",
+            Orange: "assets/images/bouquets/sunshine-gerberas/orange.svg",
+            Mixed: "assets/images/bouquets/sunshine-gerberas/mixed.svg",
+        },
+
+        featured: false,
     },
     {
         id: "white-lilies-elegance",
@@ -102,7 +181,15 @@ export const BOUQUETS = [
         occasions: ["Thank You", "Housewarming", "Sympathy"],
         addons: ["Card Note", "Vase", "Fairy Lights"],
         leadTimeHours: 24,
-        image: "assets/images/white-lilies-elegance.jpg",
-        featured: false
-    }
+
+        image: "assets/images/bouquets/white-lilies/default.svg",
+
+        imageBase: "assets/images/bouquets/white-lilies",
+        defaultImage: "assets/images/bouquets/white-lilies/default.svg",
+        colorImages: {
+            White: "assets/images/bouquets/white-lilies/white.svg",
+        },
+
+        featured: false,
+    },
 ];

@@ -1,4 +1,4 @@
-import { BOUQUETS } from "./data.js";
+import { BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart, getCartCount } from "./cart.js";
 
 /* ------------------------------
@@ -88,6 +88,34 @@ function showToast(title = "Added to cart", meta = "") {
 }
 
 /* ------------------------------
+   Image (swap on colour change)
+-------------------------------- */
+
+function updateBouquetImage(bouquet) {
+  const img = document.querySelector("#bouquetImg");
+  if (!img || !bouquet) return;
+
+  const color = getSelectedValue("color");
+  const src = getBouquetImage(bouquet, color);
+
+  // Avoid pointless DOM churn
+  if (img.getAttribute("src") !== src) img.setAttribute("src", src);
+
+  const chosen = color ? ` (${color})` : "";
+  img.setAttribute("alt", `${bouquet.name}${chosen}`);
+}
+
+function wireImageSwap(bouquet) {
+  // initial draw
+  updateBouquetImage(bouquet);
+
+  // when colour changes
+  document.querySelectorAll('input[name="color"]').forEach((el) => {
+    el.addEventListener("change", () => updateBouquetImage(bouquet));
+  });
+}
+
+/* ------------------------------
    Render helpers
 -------------------------------- */
 
@@ -121,13 +149,14 @@ function renderOptionPills({ name, options, type, selectedName }) {
 
 function renderBouquet(bouquet) {
   const container = document.querySelector("#bouquetDetail");
-
   if (!container) return;
 
   if (!bouquet) {
     container.innerHTML = "<p>Sorry, bouquet not found.</p>";
     return;
   }
+
+  const initialImg = getBouquetImage(bouquet, null);
 
   container.innerHTML = `
     <div class="detail">
@@ -141,6 +170,20 @@ function renderBouquet(bouquet) {
           <div class="price">R${bouquet.priceMin}–R${bouquet.priceMax}</div>
           <div class="muted">Estimated range</div>
         </div>
+      </div>
+
+      <!-- NEW: image card -->
+      <div class="card" style="padding: 14px;">
+        <img
+          id="bouquetImg"
+          src="${initialImg}"
+          alt="${bouquet.name}"
+          loading="eager"
+          style="width: 100%; height: 320px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); background: #fff;"
+        />
+        <p class="muted" style="margin: 10px 0 0;">
+          Preview updates when you change colour.
+        </p>
       </div>
 
       <div class="detail-grid">
@@ -196,7 +239,8 @@ function renderBouquet(bouquet) {
     </div>
   `;
 
-  wireValidation();
+  wireValidation(bouquet);
+  wireImageSwap(bouquet);
   refreshButtonState();
   updateMiniCartBar();
 }
@@ -205,18 +249,20 @@ function renderBouquet(bouquet) {
    Wiring
 -------------------------------- */
 
-function wireValidation() {
+function wireValidation(bouquet) {
   document
     .querySelectorAll('input[name="size"], input[name="color"], input[type="checkbox"]')
     .forEach((el) =>
       el.addEventListener("change", () => {
         refreshButtonState();
         updateMiniCartBar();
+        // ensure image stays synced if colour changes
+        if (el.name === "color") updateBouquetImage(bouquet);
       })
     );
 
   const btn = document.querySelector("#addToCartBtn");
-  if (btn) btn.addEventListener("click", onAddToCart);
+  if (btn) btn.addEventListener("click", () => onAddToCart(bouquet));
 }
 
 function refreshButtonState() {
@@ -242,9 +288,7 @@ function refreshButtonState() {
   }
 }
 
-function onAddToCart() {
-  const bouquetId = getBouquetId();
-  const bouquet = BOUQUETS.find((b) => b.id === bouquetId);
+function onAddToCart(bouquet) {
   if (!bouquet) return;
 
   const size = getSelectedValue("size");
@@ -254,6 +298,8 @@ function onAddToCart() {
     return;
   }
 
+  const image = getBouquetImage(bouquet, color);
+
   const item = {
     id: bouquet.id,
     name: bouquet.name,
@@ -261,6 +307,7 @@ function onAddToCart() {
     priceMax: bouquet.priceMax,
     size,
     color,
+    image, // NEW: store selected image per variant
     addons: getSelectedAddons(),
     qty: 1,
   };

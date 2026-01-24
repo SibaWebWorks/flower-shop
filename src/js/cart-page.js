@@ -1,4 +1,4 @@
-import { SHOP, BOUQUETS } from "./data.js";
+import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { getCart, clearCart, updateQty, removeItem, updateItem } from "./cart.js";
 
 const cartList = document.querySelector("#cartList");
@@ -25,8 +25,10 @@ function updateHeaderCartBadge() {
 }
 
 /* ------------------------------
-   Toast UX (non-blocking feedback)
+   Toast UX
 -------------------------------- */
+
+let toastTimer = null;
 
 function ensureToast() {
   let toast = document.querySelector("#sbToast");
@@ -35,6 +37,8 @@ function ensureToast() {
   toast = document.createElement("div");
   toast.id = "sbToast";
   toast.className = "toast";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
   toast.innerHTML = `
     <span id="sbToastTitle">Done</span>
     <span class="toast-muted" id="sbToastMeta"></span>
@@ -52,11 +56,13 @@ function showToast(title = "Done", meta = "") {
   if (metaEl) metaEl.textContent = meta;
 
   toast.classList.add("show");
-  window.clearTimeout(window.__sbToastTimer);
-  window.__sbToastTimer = window.setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2200);
+  if (toastTimer) window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2200);
 }
+
+/* ------------------------------
+   Empty
+-------------------------------- */
 
 function renderEmpty() {
   if (!cartList) return;
@@ -79,6 +85,21 @@ function renderEmpty() {
   const summary = document.querySelector("#cartEstimate");
   if (summary) summary.textContent = "—";
   setCheckoutEnabled(false);
+}
+
+/* ------------------------------
+   Render
+-------------------------------- */
+
+function resolveItemImage(item, bouquet) {
+  // Prefer stored item.image (variant-specific)
+  if (item?.image) return item.image;
+
+  // Fallback: compute from bouquet + selected colour
+  if (bouquet) return getBouquetImage(bouquet, item?.color || null);
+
+  // Last resort: nothing
+  return "";
 }
 
 function render() {
@@ -121,14 +142,29 @@ function render() {
       const lineMin = (i.priceMin || 0) * (i.qty || 1);
       const lineMax = (i.priceMax || 0) * (i.qty || 1);
 
+      const imgSrc = resolveItemImage(i, b);
+      const imgAlt = `${i.name}${i.color ? ` (${i.color})` : ""}`;
+
       return `
         <div class="card">
           <div class="cart-item">
             <div class="cart-item-top">
               <div class="cart-item-meta">
-                <h3 class="m-0">${i.name}</h3>
-                <p class="muted m-0">Est. ${money(i.priceMin)}–${money(i.priceMax)} each</p>
+                <div class="cart-item-head">
+                  ${
+                    imgSrc
+                      ? `<img class="cart-thumb" src="./${String(imgSrc).replace(/^\.\//, "")}" alt="${imgAlt}" loading="lazy"
+                           onerror="this.style.display='none';" />`
+                      : ""
+                  }
+
+                  <div class="cart-item-titleblock">
+                    <h3 class="m-0">${i.name}</h3>
+                    <p class="muted m-0">Est. ${money(i.priceMin)}–${money(i.priceMax)} each</p>
+                  </div>
+                </div>
               </div>
+
               <button class="btn btn-danger removeBtn" data-key="${i.key}" type="button">Remove</button>
             </div>
 
@@ -178,12 +214,15 @@ function render() {
   wire();
 }
 
+/* ------------------------------
+   Wire
+-------------------------------- */
+
 function wire() {
   document.querySelectorAll(".removeBtn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const key = e.currentTarget.dataset.key;
 
-      // Grab name before removal (for toast)
       const cart = getCart();
       const item = cart.find((x) => x.key === key);
       const label = item?.name || "Item";
@@ -218,7 +257,19 @@ function wire() {
       const field = e.currentTarget.dataset.field;
       const value = e.currentTarget.value;
 
-      updateItem(key, { [field]: value });
+      // If user changed colour, update the variant image too
+      if (field === "color") {
+        const cart = getCart();
+        const item = cart.find((x) => x.key === key);
+        const bouquet = BOUQUETS.find((b) => b.id === item?.id);
+
+        const image = bouquet ? getBouquetImage(bouquet, value) : item?.image;
+
+        updateItem(key, { color: value, image });
+      } else {
+        updateItem(key, { [field]: value });
+      }
+
       updateHeaderCartBadge();
       render();
     });
@@ -244,6 +295,10 @@ function wire() {
   });
 }
 
+/* ------------------------------
+   WhatsApp message
+-------------------------------- */
+
 function buildWhatsAppMessage() {
   const cart = getCart();
   if (!cart.length) return null;
@@ -267,6 +322,10 @@ function buildWhatsAppMessage() {
 
   return lines.join("\n");
 }
+
+/* ------------------------------
+   Buttons
+-------------------------------- */
 
 clearBtn?.addEventListener("click", () => {
   const countBefore = getCart().length;

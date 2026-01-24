@@ -1,4 +1,4 @@
-import { BOUQUETS } from "./data.js";
+import { SHOP, BOUQUETS } from "./data.js";
 import { addToCart } from "./cart.js";
 
 function $(sel) {
@@ -40,6 +40,72 @@ function updateHeaderCartBadge() {
     window.__sbUpdateCartBadge();
   }
 }
+
+/* ------------------------------
+   Home: Delivery areas modal
+-------------------------------- */
+
+function renderDeliveryAreas(listEl) {
+  if (!listEl) return;
+
+  const areas = Array.isArray(SHOP?.areas) ? SHOP.areas : [];
+
+  if (!areas.length) {
+    listEl.innerHTML = `<p class="muted m-0">Delivery areas will be confirmed on WhatsApp.</p>`;
+    return;
+  }
+
+  listEl.innerHTML = areas
+    .map(
+      (a) => `
+        <div class="delivery-area-chip">
+          ${String(a)}
+        </div>
+      `
+    )
+    .join("");
+}
+
+function openModal(modal) {
+  if (!modal) return;
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+  document.documentElement.classList.add("modal-open");
+}
+
+function closeModal(modal) {
+  if (!modal) return;
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+  document.documentElement.classList.remove("modal-open");
+}
+
+function wireDeliveryAreasModal() {
+  const btn = $("#deliveryAreasBtn");
+  const modal = $("#deliveryAreasModal");
+  const list = $("#deliveryAreasList");
+
+  if (!btn || !modal || !list) return;
+
+  // populate on boot (fast + simple)
+  renderDeliveryAreas(list);
+
+  btn.addEventListener("click", () => openModal(modal));
+
+  // close on backdrop / close buttons
+  modal.querySelectorAll("[data-modal-close]").forEach((el) => {
+    el.addEventListener("click", () => closeModal(modal));
+  });
+
+  // close on ESC
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("is-open")) {
+      closeModal(modal);
+    }
+  });
+}
+
+wireDeliveryAreasModal();
 
 /* ------------------------------
    Helpers
@@ -95,13 +161,12 @@ function renderCards(container, bouquets, { enableQuickAdd } = {}) {
 
             <div class="catalog-actions-row">
               <a class="btn btn-secondary" href="${detailUrl}">Customise</a>
-              ${
-                enableQuickAdd
-                  ? `<button class="btn btn-primary" type="button" data-quickadd="${b.id}">
+              ${enableQuickAdd
+          ? `<button class="btn btn-primary" type="button" data-quickadd="${b.id}">
                       Add to cart
                     </button>`
-                  : ""
-              }
+          : ""
+        }
             </div>
           </div>
         </article>

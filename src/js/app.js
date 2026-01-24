@@ -5,6 +5,10 @@ function $(sel) {
   return document.querySelector(sel);
 }
 
+/* ------------------------------
+   Toast (shared: home + catalog)
+-------------------------------- */
+
 function ensureToast() {
   let toast = $("#sbToast");
   if (toast) return toast;
@@ -12,20 +16,23 @@ function ensureToast() {
   toast = document.createElement("div");
   toast.id = "sbToast";
   toast.className = "toast";
-  toast.innerHTML = `<span id="sbToastText">Added to cart</span> <span class="toast-muted">• View cart when ready</span>`;
+  toast.innerHTML = `
+    <span id="sbToastText">Done</span>
+    <span class="toast-muted">• View cart when ready</span>
+  `;
   document.body.appendChild(toast);
   return toast;
 }
 
 let toastTimer = null;
-function showToast(text = "Added to cart") {
+function showToast(text = "Done") {
   const toast = ensureToast();
   const t = $("#sbToastText");
   if (t) t.textContent = text;
 
   toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 1600);
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1700);
 }
 
 function updateHeaderCartBadge() {
@@ -34,66 +41,214 @@ function updateHeaderCartBadge() {
   }
 }
 
-function renderCards(container, bouquets, { enableQuickAdd }) {
+/* ------------------------------
+   Helpers
+-------------------------------- */
+
+function safeLower(v) {
+  return String(v || "").toLowerCase().trim();
+}
+
+function uniq(arr) {
+  return Array.from(new Set(arr.filter(Boolean)));
+}
+
+function midPrice(b) {
+  const a = Number(b?.priceMin ?? 0);
+  const c = Number(b?.priceMax ?? 0);
+  if (!a && !c) return 0;
+  if (!c) return a;
+  if (!a) return c;
+  return (a + c) / 2;
+}
+
+/* ------------------------------
+   Card rendering
+-------------------------------- */
+
+function renderCards(container, bouquets, { enableQuickAdd } = {}) {
   if (!container) return;
 
   container.innerHTML = bouquets
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
-      return `
-        <article class="card">
-          <h3>${b.name}</h3>
-          <p class="muted">${b.shortDescription}</p>
-          <div class="price">R${b.priceMin}–R${b.priceMax}</div>
 
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-            <a class="btn" href="${detailUrl}">Customise</a>
-            ${
-              enableQuickAdd
-                ? `<button class="btn" type="button" data-quickadd="${b.id}">Add to cart</button>`
-                : ""
-            }
+      // Keep cards consistent even without images (you can add later)
+      const imgHtml = b.image
+        ? `<img class="catalog-img" src="./${b.image.replace(/^\.\//, "")}" alt="${b.name}" loading="lazy"
+              onerror="this.style.display='none'; this.closest('.catalog-media')?.classList.add('no-img');" />`
+        : "";
+
+      return `
+        <article class="card catalog-card">
+          <div class="catalog-media ${b.image ? "" : "no-img"}">
+            ${imgHtml}
+          </div>
+
+          <div class="catalog-body">
+            <div class="catalog-top">
+              <h3 class="m-0">${b.name}</h3>
+              <div class="price">R${b.priceMin}–R${b.priceMax}</div>
+            </div>
+
+            <p class="muted catalog-desc">${b.shortDescription}</p>
+
+            <div class="catalog-actions-row">
+              <a class="btn btn-secondary" href="${detailUrl}">Customise</a>
+              ${
+                enableQuickAdd
+                  ? `<button class="btn btn-primary" type="button" data-quickadd="${b.id}">
+                      Add to cart
+                    </button>`
+                  : ""
+              }
+            </div>
           </div>
         </article>
       `;
     })
     .join("");
 
-  if (enableQuickAdd) {
-    container.querySelectorAll("[data-quickadd]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const id = e.currentTarget.getAttribute("data-quickadd");
-        const b = BOUQUETS.find((x) => x.id === id);
-        if (!b) return;
+  if (enableQuickAdd) wireQuickAdd(container);
+}
 
-        // Quick add uses default first options (safe + fast)
-        addToCart({
-          id: b.id,
-          name: b.name,
-          priceMin: b.priceMin,
-          priceMax: b.priceMax,
-          size: b.sizes?.[0] ?? null,
-          color: b.colors?.[0] ?? null,
-          addons: [],
-          qty: 1,
-        });
+function wireQuickAdd(container) {
+  container.querySelectorAll("[data-quickadd]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.getAttribute("data-quickadd");
+      const b = BOUQUETS.find((x) => x.id === id);
+      if (!b) return;
 
-        updateHeaderCartBadge();
-        showToast(`${b.name} added`);
+      // Quick add uses first options (fast path)
+      const size = b.sizes?.[0] ?? null;
+      const color = b.colors?.[0] ?? null;
+
+      // If something is missing, fall back to customise page (no broken cart items)
+      if (!size || !color) {
+        window.location.href = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
+        return;
+      }
+
+      addToCart({
+        id: b.id,
+        name: b.name,
+        priceMin: b.priceMin,
+        priceMax: b.priceMax,
+        size,
+        color,
+        addons: [],
+        qty: 1,
       });
+
+      updateHeaderCartBadge();
+      showToast(`${b.name} added`);
     });
+  });
+}
+
+/* ------------------------------
+   Home featured (if present)
+-------------------------------- */
+
+const featuredGrid = $("#featuredGrid");
+if (featuredGrid) {
+  const featured = BOUQUETS.filter((b) => b.featured);
+  renderCards(featuredGrid, (featured.length ? featured : BOUQUETS).slice(0, 3), {
+    enableQuickAdd: true,
+  });
+}
+
+/* ------------------------------
+   Catalog page: Search / Filter / Sort
+-------------------------------- */
+
+const catalogGrid = $("#catalogGrid");
+const searchInput = $("#searchInput");
+const categorySelect = $("#categorySelect");
+const sortSelect = $("#sortSelect");
+const resetBtn = $("#resetFiltersBtn");
+const resultsMeta = $("#resultsMeta");
+
+function hydrateCategoryOptions() {
+  if (!categorySelect) return;
+
+  const cats = uniq(BOUQUETS.map((b) => b.category)).sort((a, b) =>
+    a.localeCompare(b)
+  );
+
+  // keep first option already in HTML
+  cats.forEach((c) => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    categorySelect.appendChild(opt);
+  });
+}
+
+function applyFiltersAndSort() {
+  if (!catalogGrid) return;
+
+  const q = safeLower(searchInput?.value);
+  const cat = (categorySelect?.value || "").trim();
+  const sort = (sortSelect?.value || "featured").trim();
+
+  let list = [...BOUQUETS];
+
+  // Filter: category
+  if (cat) list = list.filter((b) => (b.category || "").trim() === cat);
+
+  // Filter: search
+  if (q) {
+    list = list.filter((b) => {
+      const hay = [
+        b.name,
+        b.shortDescription,
+        b.category,
+        ...(b.colors || []),
+        ...(b.sizes || []),
+        ...(b.occasions || []),
+      ]
+        .map(safeLower)
+        .join(" ");
+      return hay.includes(q);
+    });
+  }
+
+  // Sort
+  if (sort === "featured") {
+    list.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+  } else if (sort === "price-asc") {
+    list.sort((a, b) => midPrice(a) - midPrice(b));
+  } else if (sort === "price-desc") {
+    list.sort((a, b) => midPrice(b) - midPrice(a));
+  } else if (sort === "name-asc") {
+    list.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  }
+
+  renderCards(catalogGrid, list, { enableQuickAdd: true });
+
+  if (resultsMeta) {
+    const total = BOUQUETS.length;
+    resultsMeta.textContent = `${list.length} of ${total} bouquets`;
   }
 }
 
-// Home featured
-const featuredGrid = $("#featuredGrid");
-if (featuredGrid) {
-  renderCards(featuredGrid, BOUQUETS.slice(0, 3), { enableQuickAdd: true });
+function wireCatalogControls() {
+  if (!catalogGrid) return;
+
+  hydrateCategoryOptions();
+  applyFiltersAndSort();
+
+  searchInput?.addEventListener("input", applyFiltersAndSort);
+  categorySelect?.addEventListener("change", applyFiltersAndSort);
+  sortSelect?.addEventListener("change", applyFiltersAndSort);
+
+  resetBtn?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (categorySelect) categorySelect.value = "";
+    if (sortSelect) sortSelect.value = "featured";
+    applyFiltersAndSort();
+  });
 }
 
-// Catalog page grid
-const catalogGrid =
-  $("#catalogGrid") || $("#bouquetsGrid") || $("#allBouquetsGrid") || $("#grid");
-if (catalogGrid) {
-  renderCards(catalogGrid, BOUQUETS, { enableQuickAdd: true });
-}
+wireCatalogControls();

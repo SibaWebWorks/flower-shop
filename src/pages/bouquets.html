@@ -3,7 +3,8 @@
 
 <head>
     <title>Bouquets | Sister Blooms</title>
-    <meta name="description" content="Browse our range of fresh, seasonal bouquets. Choose styles, colours, and sizes, then add your favourites to cart before ordering on WhatsApp." />
+    <meta name="description"
+        content="Browse our range of fresh, seasonal bouquets. Choose styles, colours, and sizes, then add your favourites to cart before ordering on WhatsApp." />
     <link rel="canonical" href="https://sibawebworks.github.io/flower-shop/bouquets.html" />
     <!-- @include partials/head.html -->
 </head>
@@ -13,30 +14,55 @@
 
     <main class="container">
         <section class="section">
-            <h2>All bouquets</h2>
+            <div class="catalog-head">
+                <div>
+                    <h2 class="m-0">All bouquets</h2>
+                    <p class="muted m-0">Search, filter, and customise — then add to cart.</p>
+                </div>
+            </div>
+
+            <div class="catalog-controls card">
+                <div class="catalog-controls-grid">
+                    <div class="catalog-field">
+                        <label class="muted catalog-label" for="searchInput">Search</label>
+                        <input id="searchInput" type="text" placeholder="Try: roses, lilies, pastel…" />
+                    </div>
+
+                    <div class="catalog-field">
+                        <label class="muted catalog-label" for="categorySelect">Category</label>
+                        <select id="categorySelect">
+                            <option value="">All categories</option>
+                        </select>
+                    </div>
+
+                    <div class="catalog-field">
+                        <label class="muted catalog-label" for="sortSelect">Sort</label>
+                        <select id="sortSelect">
+                            <option value="featured">Featured</option>
+                            <option value="price-asc">Price: low to high</option>
+                            <option value="price-desc">Price: high to low</option>
+                            <option value="name-asc">Name: A–Z</option>
+                        </select>
+                    </div>
+
+                    <div class="catalog-field catalog-actions">
+                        <button class="btn btn-secondary" id="resetFiltersBtn" type="button">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="catalog-meta">
+                    <span class="muted" id="resultsMeta">—</span>
+                </div>
+            </div>
+
             <div id="catalogGrid" class="grid"></div>
         </section>
     </main>
 
-    <script type="module">
-        import { BOUQUETS } from "./js/data.js";
-
-        const grid = document.querySelector("#catalogGrid");
-
-        grid.innerHTML = BOUQUETS
-            .map(b => `
-          <article class="card">
-            <h3>${b.name}</h3>
-            <p>${b.shortDescription}</p>
-            <div class="price">R${b.priceMin}–R${b.priceMax}</div>
-            <a class="btn" href="./bouquet.html?id=${encodeURIComponent(b.id)}">
-              Customise
-            </a>
-          </article>
-        `)
-            .join("");
-    </script>
     <!-- @include partials/footer.html -->
+    <script type="module" src="./js/app.js"></script>
 </body>
 
 </html>

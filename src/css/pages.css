@@ -75,6 +75,53 @@
 }
 
 /* ==========================
+   Home: How it works (collapsible)
+   ========================== */
+
+.hiw {
+    padding: 0;
+    overflow: hidden;
+}
+
+.hiw-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 18px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.hiw-summary::-webkit-details-marker {
+    display: none;
+}
+
+.hiw-title {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+}
+
+.hiw-meta {
+    font-size: 13px;
+}
+
+.hiw-body {
+    border-top: 1px solid var(--border);
+    padding: 16px 18px 18px;
+}
+
+.hiw[open] .hiw-summary {
+    background: rgba(17, 17, 17, 0.02);
+}
+
+.hiw .steps {
+    margin-top: 0;
+}
+
+/* ==========================
    Home: Delivery areas
    ========================== */
 

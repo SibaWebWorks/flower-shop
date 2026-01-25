@@ -181,6 +181,122 @@ function wireDeliveryDate() {
 }
 
 /* ------------------------------
+   Delivery Area (Cart-level)  ✅ NEW
+-------------------------------- */
+
+const DELIVERY_AREA_KEY = "sb_delivery_area_v1";
+
+const deliveryAreaBlock = document.querySelector("#deliveryAreaBlock");
+const deliveryAreaSelect = document.querySelector("#deliveryAreaSelect");
+const deliveryAreaValue = document.querySelector("#deliveryAreaValue");
+const deliveryAreaClearBtn = document.querySelector("#deliveryAreaClearBtn");
+
+function setDeliveryAreaVisible(visible) {
+  if (!deliveryAreaBlock) return;
+  deliveryAreaBlock.style.display = visible ? "block" : "none";
+}
+
+function readDeliveryArea() {
+  const raw = localStorage.getItem(DELIVERY_AREA_KEY);
+  return raw ? String(raw) : "";
+}
+
+function writeDeliveryArea(area) {
+  const clean = String(area || "").trim();
+  if (!clean) {
+    localStorage.removeItem(DELIVERY_AREA_KEY);
+    return;
+  }
+  localStorage.setItem(DELIVERY_AREA_KEY, clean);
+}
+
+function clearDeliveryArea() {
+  localStorage.removeItem(DELIVERY_AREA_KEY);
+  updateDeliveryAreaUI();
+}
+
+function isAllowedArea(area) {
+  const a = String(area || "").trim();
+  if (!a) return false;
+  return (SHOP.areas || []).some((x) => String(x).trim() === a);
+}
+
+function hydrateDeliveryAreaOptions() {
+  if (!deliveryAreaSelect) return;
+
+  // Keep first option (Not selected) and rebuild the rest safely
+  const first = deliveryAreaSelect.querySelector("option[value='']");
+  deliveryAreaSelect.innerHTML = "";
+  if (first) deliveryAreaSelect.appendChild(first);
+  else {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "Not selected";
+    deliveryAreaSelect.appendChild(opt);
+  }
+
+  (SHOP.areas || []).forEach((area) => {
+    const a = String(area).trim();
+    if (!a) return;
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.textContent = a;
+    deliveryAreaSelect.appendChild(opt);
+  });
+}
+
+function updateDeliveryAreaUI() {
+  const selected = readDeliveryArea();
+
+  if (deliveryAreaSelect) {
+    // If storage has something invalid (areas changed), clear it
+    if (selected && !isAllowedArea(selected)) {
+      localStorage.removeItem(DELIVERY_AREA_KEY);
+      deliveryAreaSelect.value = "";
+    } else {
+      deliveryAreaSelect.value = selected || "";
+    }
+  }
+
+  if (deliveryAreaValue) {
+    deliveryAreaValue.textContent = selected ? selected : "Not selected";
+  }
+}
+
+function wireDeliveryArea() {
+  hydrateDeliveryAreaOptions();
+  updateDeliveryAreaUI();
+
+  deliveryAreaSelect?.addEventListener("change", (e) => {
+    const value = String(e.currentTarget.value || "").trim();
+
+    if (!value) {
+      writeDeliveryArea("");
+      updateDeliveryAreaUI();
+      showToast("Delivery area", "Cleared");
+      return;
+    }
+
+    if (!isAllowedArea(value)) {
+      // Defensive guard: never store/print unknown areas
+      writeDeliveryArea("");
+      updateDeliveryAreaUI();
+      showToast("Delivery area", "Please choose a valid area");
+      return;
+    }
+
+    writeDeliveryArea(value);
+    updateDeliveryAreaUI();
+    showToast("Delivery area", value);
+  });
+
+  deliveryAreaClearBtn?.addEventListener("click", () => {
+    clearDeliveryArea();
+    showToast("Delivery area", "Cleared");
+  });
+}
+
+/* ------------------------------
    Money + totals
 -------------------------------- */
 
@@ -247,6 +363,7 @@ function renderEmpty() {
   if (!cartList) return;
 
   setDeliveryDateVisible(false);
+  setDeliveryAreaVisible(false);
 
   cartList.classList.add("cart-list");
   cartList.innerHTML = `
@@ -290,7 +407,11 @@ function render() {
   }
 
   setDeliveryDateVisible(true);
+  setDeliveryAreaVisible(true);
+
   updateDeliveryUI();
+  updateDeliveryAreaUI();
+
   setCheckoutEnabled(true);
 
   cartList.innerHTML = cart
@@ -406,8 +527,11 @@ function wire() {
 
       removeItem(key);
 
-      // If cart becomes empty, clear delivery date too (clean UX)
-      if (!getCart().length) clearDeliveryDate();
+      // If cart becomes empty, clear delivery date + area too (clean UX)
+      if (!getCart().length) {
+        clearDeliveryDate();
+        clearDeliveryArea();
+      }
 
       updateHeaderCartBadge();
       render();
@@ -485,9 +609,17 @@ function buildWhatsAppMessage() {
 
   const est = getEstimate(cart);
   const deliveryDate = readDeliveryDate();
+  const deliveryArea = readDeliveryArea();
 
   const lines = ["Hi, I’d like to place an order.", " "];
 
+  // ✅ Optional delivery area
+  if (deliveryArea) {
+    lines.push(`Delivery area: ${deliveryArea}`);
+    lines.push(" ");
+  }
+
+  // ✅ Optional delivery date
   if (deliveryDate) {
     lines.push(`Delivery date: ${formatNiceDate(deliveryDate)} (${deliveryDate})`);
     lines.push(" ");
@@ -520,6 +652,7 @@ clearBtn?.addEventListener("click", () => {
 
   clearCart();
   clearDeliveryDate();
+  clearDeliveryArea();
 
   updateHeaderCartBadge();
   render();
@@ -539,4 +672,5 @@ checkoutBtn?.addEventListener("click", () => {
 -------------------------------- */
 
 wireDeliveryDate();
+wireDeliveryArea();
 render();

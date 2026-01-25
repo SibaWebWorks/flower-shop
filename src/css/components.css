@@ -460,6 +460,45 @@ html.modal-open body {
 }
 
 /* --------------------------------
+   Delivery area (cart)
+-------------------------------- */
+
+.delivery-area {
+  display: grid;
+  gap: 12px;
+}
+
+.delivery-area-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.delivery-area-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+}
+
+.delivery-area-value {
+  font-family: var(--font-head);
+  font-weight: 700;
+  text-align: right;
+}
+
+.delivery-area-controls {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 720px) {
+  .delivery-area-controls {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+
+/* --------------------------------
    Cart helpers
 -------------------------------- */
 

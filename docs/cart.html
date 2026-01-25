@@ -123,6 +123,31 @@
             </div>
           </div>
 
+          <!-- Delivery area (optional, hidden until cart has items) -->
+          <div class="delivery-area card-soft" id="deliveryAreaBlock" style="display:none;">
+            <div class="delivery-area-head">
+              <div>
+                <p class="m-0 delivery-area-title">Delivery area (optional)</p>
+                <p class="muted m-0" id="deliveryAreaHint">
+                  Pick your area to help us confirm delivery fee faster.
+                </p>
+              </div>
+              <p class="m-0 delivery-area-value" id="deliveryAreaValue">Not selected</p>
+            </div>
+
+            <div class="delivery-area-controls">
+              <div class="field">
+                <label class="muted field-label" for="deliveryAreaSelect">Area</label>
+                <select id="deliveryAreaSelect">
+                  <option value="">Not selected</option>
+                  <!-- JS injects options from SHOP.areas -->
+                </select>
+              </div>
+
+              <button class="btn btn-secondary" type="button" id="deliveryAreaClearBtn">Clear</button>
+            </div>
+          </div>
+
           <p class="muted m-0 cart-summary-total">
             Estimated bouquet total: <strong id="cartEstimate">—</strong>
           </p>

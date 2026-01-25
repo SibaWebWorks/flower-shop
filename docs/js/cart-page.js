@@ -38,7 +38,6 @@ function toISODateLocal(d) {
 }
 
 function formatNiceDate(iso) {
-  // iso is YYYY-MM-DD
   const parts = String(iso || "").split("-");
   if (parts.length !== 3) return iso;
 
@@ -88,7 +87,6 @@ function setDeliveryDate(isoDate) {
 }
 
 function setActiveDeliveryButton(which) {
-  // which: "today" | "tomorrow" | "pick" | ""
   const map = [
     [deliveryTodayBtn, which === "today"],
     [deliveryTomorrowBtn, which === "tomorrow"],
@@ -110,7 +108,6 @@ function updateDeliveryUI() {
     new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
   );
 
-  // Configure date input constraints
   if (deliveryDateInput) {
     deliveryDateInput.min = todayIso;
     deliveryDateInput.value = selected || "";
@@ -136,60 +133,51 @@ function updateDeliveryUI() {
 }
 
 function wireDeliveryDate() {
-  if (deliveryTodayBtn) {
-    deliveryTodayBtn.addEventListener("click", () => {
-      setDeliveryDate(toISODateLocal(new Date()));
-      if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
-      showToast("Delivery date", "Today selected");
-    });
-  }
+  deliveryTodayBtn?.addEventListener("click", () => {
+    setDeliveryDate(toISODateLocal(new Date()));
+    if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+    showToast("Delivery date", "Today selected");
+  });
 
-  if (deliveryTomorrowBtn) {
-    deliveryTomorrowBtn.addEventListener("click", () => {
-      const d = new Date();
-      d.setDate(d.getDate() + 1);
-      setDeliveryDate(toISODateLocal(d));
-      if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
-      showToast("Delivery date", "Tomorrow selected");
-    });
-  }
+  deliveryTomorrowBtn?.addEventListener("click", () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    setDeliveryDate(toISODateLocal(d));
+    if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+    showToast("Delivery date", "Tomorrow selected");
+  });
 
-  if (deliveryPickBtn) {
-    deliveryPickBtn.addEventListener("click", () => {
-      if (!deliveryDatePicker || !deliveryDateInput) return;
+  deliveryPickBtn?.addEventListener("click", () => {
+    if (!deliveryDatePicker || !deliveryDateInput) return;
 
-      const isOpen = deliveryDatePicker.style.display !== "none";
-      deliveryDatePicker.style.display = isOpen ? "none" : "block";
+    const isOpen = deliveryDatePicker.style.display !== "none";
+    deliveryDatePicker.style.display = isOpen ? "none" : "block";
 
-      if (!isOpen) deliveryDateInput.focus();
+    if (!isOpen) deliveryDateInput.focus();
+    setActiveDeliveryButton("pick");
+  });
 
-      setActiveDeliveryButton("pick");
-    });
-  }
-
-  if (deliveryDateInput) {
-    deliveryDateInput.addEventListener("change", (e) => {
-      const iso = e.currentTarget.value;
-      if (!iso) return;
-      setDeliveryDate(iso);
-      if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
-      showToast("Delivery date", formatNiceDate(iso));
-    });
-  }
+  deliveryDateInput?.addEventListener("change", (e) => {
+    const iso = e.currentTarget.value;
+    if (!iso) return;
+    setDeliveryDate(iso);
+    if (deliveryDatePicker) deliveryDatePicker.style.display = "none";
+    showToast("Delivery date", formatNiceDate(iso));
+  });
 
   updateDeliveryUI();
 }
 
 /* ------------------------------
-   Delivery Area (Cart-level)  ✅ NEW
+   Delivery Area (Cart-level)
 -------------------------------- */
 
 const DELIVERY_AREA_KEY = "sb_delivery_area_v1";
 
 const deliveryAreaBlock = document.querySelector("#deliveryAreaBlock");
 const deliveryAreaSelect = document.querySelector("#deliveryAreaSelect");
-const deliveryAreaValue = document.querySelector("#deliveryAreaValue");
 const deliveryAreaClearBtn = document.querySelector("#deliveryAreaClearBtn");
+const deliveryAreaValue = document.querySelector("#deliveryAreaValue");
 
 function setDeliveryAreaVisible(visible) {
   if (!deliveryAreaBlock) return;
@@ -202,12 +190,12 @@ function readDeliveryArea() {
 }
 
 function writeDeliveryArea(area) {
-  const clean = String(area || "").trim();
-  if (!clean) {
+  const v = String(area || "").trim();
+  if (!v) {
     localStorage.removeItem(DELIVERY_AREA_KEY);
     return;
   }
-  localStorage.setItem(DELIVERY_AREA_KEY, clean);
+  localStorage.setItem(DELIVERY_AREA_KEY, v);
 }
 
 function clearDeliveryArea() {
@@ -215,17 +203,11 @@ function clearDeliveryArea() {
   updateDeliveryAreaUI();
 }
 
-function isAllowedArea(area) {
-  const a = String(area || "").trim();
-  if (!a) return false;
-  return (SHOP.areas || []).some((x) => String(x).trim() === a);
-}
-
-function hydrateDeliveryAreaOptions() {
+function hydrateDeliveryAreas() {
   if (!deliveryAreaSelect) return;
 
-  // Keep first option (Not selected) and rebuild the rest safely
-  const first = deliveryAreaSelect.querySelector("option[value='']");
+  // Keep the first "Not selected" option, clear the rest
+  const first = deliveryAreaSelect.querySelector('option[value=""]');
   deliveryAreaSelect.innerHTML = "";
   if (first) deliveryAreaSelect.appendChild(first);
   else {
@@ -235,27 +217,34 @@ function hydrateDeliveryAreaOptions() {
     deliveryAreaSelect.appendChild(opt);
   }
 
-  (SHOP.areas || []).forEach((area) => {
-    const a = String(area).trim();
-    if (!a) return;
+  (SHOP.areas || []).forEach((a) => {
+    const area = String(a || "").trim();
+    if (!area) return;
+
     const opt = document.createElement("option");
-    opt.value = a;
-    opt.textContent = a;
+    opt.value = area;
+    opt.textContent = area;
     deliveryAreaSelect.appendChild(opt);
   });
 }
 
+function isValidDeliveryArea(area) {
+  const v = String(area || "").trim();
+  if (!v) return false;
+  return (SHOP.areas || []).some((a) => String(a || "").trim() === v);
+}
+
 function updateDeliveryAreaUI() {
-  const selected = readDeliveryArea();
+  let selected = readDeliveryArea();
+
+  // If data.js changed and saved value is no longer valid, clear it
+  if (selected && !isValidDeliveryArea(selected)) {
+    localStorage.removeItem(DELIVERY_AREA_KEY);
+    selected = "";
+  }
 
   if (deliveryAreaSelect) {
-    // If storage has something invalid (areas changed), clear it
-    if (selected && !isAllowedArea(selected)) {
-      localStorage.removeItem(DELIVERY_AREA_KEY);
-      deliveryAreaSelect.value = "";
-    } else {
-      deliveryAreaSelect.value = selected || "";
-    }
+    deliveryAreaSelect.value = selected || "";
   }
 
   if (deliveryAreaValue) {
@@ -264,30 +253,14 @@ function updateDeliveryAreaUI() {
 }
 
 function wireDeliveryArea() {
-  hydrateDeliveryAreaOptions();
+  hydrateDeliveryAreas();
   updateDeliveryAreaUI();
 
   deliveryAreaSelect?.addEventListener("change", (e) => {
-    const value = String(e.currentTarget.value || "").trim();
-
-    if (!value) {
-      writeDeliveryArea("");
-      updateDeliveryAreaUI();
-      showToast("Delivery area", "Cleared");
-      return;
-    }
-
-    if (!isAllowedArea(value)) {
-      // Defensive guard: never store/print unknown areas
-      writeDeliveryArea("");
-      updateDeliveryAreaUI();
-      showToast("Delivery area", "Please choose a valid area");
-      return;
-    }
-
-    writeDeliveryArea(value);
+    const v = String(e.currentTarget.value || "").trim();
+    writeDeliveryArea(v);
     updateDeliveryAreaUI();
-    showToast("Delivery area", value);
+    if (v) showToast("Delivery area", v);
   });
 
   deliveryAreaClearBtn?.addEventListener("click", () => {
@@ -364,6 +337,10 @@ function renderEmpty() {
 
   setDeliveryDateVisible(false);
   setDeliveryAreaVisible(false);
+
+  // Reset displayed labels (so when cart is re-filled it starts clean)
+  updateDeliveryUI();
+  updateDeliveryAreaUI();
 
   cartList.classList.add("cart-list");
   cartList.innerHTML = `
@@ -527,7 +504,7 @@ function wire() {
 
       removeItem(key);
 
-      // If cart becomes empty, clear delivery date + area too (clean UX)
+      // If cart becomes empty, clear delivery bits (clean UX)
       if (!getCart().length) {
         clearDeliveryDate();
         clearDeliveryArea();
@@ -613,15 +590,13 @@ function buildWhatsAppMessage() {
 
   const lines = ["Hi, I’d like to place an order.", " "];
 
-  // ✅ Optional delivery area
-  if (deliveryArea) {
-    lines.push(`Delivery area: ${deliveryArea}`);
+  if (deliveryDate) {
+    lines.push(`Delivery date: ${formatNiceDate(deliveryDate)} (${deliveryDate})`);
     lines.push(" ");
   }
 
-  // ✅ Optional delivery date
-  if (deliveryDate) {
-    lines.push(`Delivery date: ${formatNiceDate(deliveryDate)} (${deliveryDate})`);
+  if (deliveryArea) {
+    lines.push(`Delivery area: ${deliveryArea}`);
     lines.push(" ");
   }
 

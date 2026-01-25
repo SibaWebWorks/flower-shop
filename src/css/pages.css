@@ -74,6 +74,35 @@
     margin-top: 14px;
 }
 
+/* ==========================
+   Home: Delivery areas
+   ========================== */
+
+.delivery-areas-card {
+    gap: 14px;
+}
+
+.delivery-notes {
+    border: 1px solid rgba(17, 17, 17, 0.10);
+    background: rgba(17, 17, 17, 0.02);
+    border-radius: 14px;
+    padding: 12px;
+}
+
+.delivery-notes-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.delivery-notes-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    display: grid;
+    gap: 6px;
+}
+
 /* Anchor jump */
 #why-us {
     scroll-margin-top: 22px;

@@ -6,6 +6,7 @@
     margin-top: 18px;
 }
 
+/* Card container */
 .hero-card {
     position: relative;
     border: 1px solid var(--border);
@@ -16,33 +17,42 @@
     overflow: hidden;
 }
 
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(17, 17, 17, 0.05);
-    border: 1px solid rgba(17, 17, 17, 0.10);
-    margin-bottom: 12px;
+/* New 1-column hero layout */
+.hero-onecol {
+    display: grid;
+    gap: 14px;
 }
 
-.hero-title {
-    font-size: 34px;
-    margin-bottom: 10px;
+/* New hero title style */
+.hero-title-strong {
+    margin: 0;
+    font-size: 44px;
+    letter-spacing: -0.03em;
 }
 
-.hero-subtitle {
-    font-size: 16px;
-    max-width: 62ch;
+.hero-title-top {
+    display: block;
+    text-transform: uppercase;
 }
 
+.hero-title-bottom {
+    display: block;
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+    margin-top: 6px;
+}
+
+/* Actions row */
 .hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 14px;
+}
+
+.hero-actions-one {
+    margin-top: 6px;
 }
 
 .hero-btn-secondary {
@@ -52,19 +62,30 @@
 
 .hero-note {
     font-size: 13px;
-    margin-top: 12px;
+    margin-top: 2px;
 }
 
-/* neutral accent block on the right */
-.hero-sparkle {
-    height: 170px;
-    border-radius: var(--radius-lg);
-    background:
-        radial-gradient(240px 160px at 30% 40%, rgba(17, 17, 17, 0.06), transparent 70%),
-        radial-gradient(240px 160px at 70% 60%, rgba(17, 17, 17, 0.04), transparent 72%),
-        #ffffff;
+/* Big bouquet image block */
+.hero-media {
+    margin-top: 8px;
+    border-radius: calc(var(--radius-lg) - 2px);
     border: 1px solid var(--border);
+    background: #ffffff;
+    overflow: hidden;
     box-shadow: var(--shadow-soft);
+}
+
+.hero-img {
+    width: 100%;
+    height: clamp(260px, 36vw, 420px);
+    object-fit: contain;
+    display: block;
+    padding: 18px;
+}
+
+/* Old right-side block (disable) */
+.hero-sparkle {
+    display: none;
 }
 
 /* Steps */
@@ -201,9 +222,10 @@
     font-size: 13px;
 }
 
+/* IMPORTANT: force hero to stay 1-column on desktop */
 @media (min-width: 900px) {
     .hero {
-        grid-template-columns: 1.4fr 0.6fr;
+        grid-template-columns: 1fr;
         align-items: stretch;
     }
 

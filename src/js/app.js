@@ -6,6 +6,18 @@ function $(sel) {
 }
 
 /* ------------------------------
+   Image src resolver
+   - supports absolute URLs (https://...)
+   - keeps relative paths working (assets/...)
+-------------------------------- */
+function resolveImgSrc(src) {
+  const s = String(src || "").trim();
+  if (!s) return "";
+  if (/^https?:\/\//i.test(s)) return s;
+  return `./${s.replace(/^\.\//, "")}`;
+}
+
+/* ------------------------------
    Toast (shared: home + catalog)
 -------------------------------- */
 
@@ -139,15 +151,17 @@ function renderCards(container, bouquets, { enableQuickAdd } = {}) {
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
 
+      const imgSrc = resolveImgSrc(b.image);
+
       // Keep cards consistent even without images (you can add later)
-      const imgHtml = b.image
-        ? `<img class="catalog-img" src="./${b.image.replace(/^\.\//, "")}" alt="${b.name}" loading="lazy"
+      const imgHtml = imgSrc
+        ? `<img class="catalog-img" src="${imgSrc}" alt="${b.name}" loading="lazy"
               onerror="this.style.display='none'; this.closest('.catalog-media')?.classList.add('no-img');" />`
         : "";
 
       return `
         <article class="card catalog-card">
-          <div class="catalog-media ${b.image ? "" : "no-img"}">
+          <div class="catalog-media ${imgSrc ? "" : "no-img"}">
             ${imgHtml}
           </div>
 

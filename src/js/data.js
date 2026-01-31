@@ -31,6 +31,66 @@ export const SHOP = {
 };
 
 /**
+ * Central place for ALL external image URLs.
+ * Later, when you add your own images, you only change URLs here.
+ */
+export const IMAGES = {
+    home: {
+        hero: "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
+        banners: [
+            "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+            "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+            "https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg",
+        ],
+    },
+
+    bouquets: {
+        "blush-roses-mini": {
+            default:
+                "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+            blush:
+                "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+            white:
+                "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+        },
+
+        "red-roses-classic": {
+            default:
+                "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
+            red:
+                "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
+        },
+
+        "pastel-mix-wrap": {
+            default:
+                "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+            pastel:
+                "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+            mixed:
+                "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+        },
+
+        "sunshine-gerberas": {
+            default:
+                "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+            yellow:
+                "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+            orange:
+                "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+            mixed:
+                "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+        },
+
+        "white-lilies-elegance": {
+            default:
+                "https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg",
+            white:
+                "https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg",
+        },
+    },
+};
+
+/**
  * Turn a display color into a filename-safe slug.
  * "Blush Pink" -> "blush-pink"
  * "Valentine’s Red" -> "valentines-red"
@@ -60,8 +120,8 @@ export function getBouquetImage(bouquet, color) {
         return bouquet.colorImages[selected];
     }
 
-    // 2) try slug-based guess (useful if you keep folders consistent)
-    if (selected && bouquet.imageBase) {
+    // 2) try slug-based guess (ONLY for non-URL bases)
+    if (selected && bouquet.imageBase && !/^https?:\/\//i.test(bouquet.imageBase)) {
         const slug = slugifyColor(selected);
         if (slug) return `${bouquet.imageBase}/${slug}.svg`;
     }
@@ -84,15 +144,15 @@ export const BOUQUETS = [
         addons: ["Chocolates", "Card Note", "Fairy Lights"],
         leadTimeHours: 6,
 
-        // Legacy (keep for compatibility)
-        image: "assets/images/bouquets/blush-roses/default.svg",
+        // Legacy (keep for compatibility) — now URL-based
+        image: IMAGES.bouquets["blush-roses-mini"].default,
 
-        // New image system
-        imageBase: "assets/images/bouquets/blush-roses",
-        defaultImage: "assets/images/bouquets/blush-roses/default.svg",
+        // New image system — now URL-based
+        imageBase: "", // keep key, but no local folder
+        defaultImage: IMAGES.bouquets["blush-roses-mini"].default,
         colorImages: {
-            "Blush Pink": "assets/images/bouquets/blush-roses/blush-pink.svg",
-            White: "assets/images/bouquets/blush-roses/white.svg",
+            "Blush Pink": IMAGES.bouquets["blush-roses-mini"].blush,
+            White: IMAGES.bouquets["blush-roses-mini"].white,
         },
 
         featured: true,
@@ -110,12 +170,12 @@ export const BOUQUETS = [
         addons: ["Chocolates", "Card Note", "Balloon"],
         leadTimeHours: 12,
 
-        image: "assets/images/bouquets/red-roses/default.svg",
+        image: IMAGES.bouquets["red-roses-classic"].default,
 
-        imageBase: "assets/images/bouquets/red-roses",
-        defaultImage: "assets/images/bouquets/red-roses/default.svg",
+        imageBase: "",
+        defaultImage: IMAGES.bouquets["red-roses-classic"].default,
         colorImages: {
-            Red: "assets/images/bouquets/red-roses/red.svg",
+            Red: IMAGES.bouquets["red-roses-classic"].red,
         },
 
         featured: true,
@@ -133,13 +193,13 @@ export const BOUQUETS = [
         addons: ["Card Note", "Chocolates", "Balloon"],
         leadTimeHours: 12,
 
-        image: "assets/images/bouquets/pastel-mix/default.svg",
+        image: IMAGES.bouquets["pastel-mix-wrap"].default,
 
-        imageBase: "assets/images/bouquets/pastel-mix",
-        defaultImage: "assets/images/bouquets/pastel-mix/default.svg",
+        imageBase: "",
+        defaultImage: IMAGES.bouquets["pastel-mix-wrap"].default,
         colorImages: {
-            Pastel: "assets/images/bouquets/pastel-mix/pastel.svg",
-            Mixed: "assets/images/bouquets/pastel-mix/mixed.svg",
+            Pastel: IMAGES.bouquets["pastel-mix-wrap"].pastel,
+            Mixed: IMAGES.bouquets["pastel-mix-wrap"].mixed,
         },
 
         featured: true,
@@ -157,14 +217,14 @@ export const BOUQUETS = [
         addons: ["Card Note", "Vase"],
         leadTimeHours: 8,
 
-        image: "assets/images/bouquets/sunshine-gerberas/default.svg",
+        image: IMAGES.bouquets["sunshine-gerberas"].default,
 
-        imageBase: "assets/images/bouquets/sunshine-gerberas",
-        defaultImage: "assets/images/bouquets/sunshine-gerberas/default.svg",
+        imageBase: "",
+        defaultImage: IMAGES.bouquets["sunshine-gerberas"].default,
         colorImages: {
-            Yellow: "assets/images/bouquets/sunshine-gerberas/yellow.svg",
-            Orange: "assets/images/bouquets/sunshine-gerberas/orange.svg",
-            Mixed: "assets/images/bouquets/sunshine-gerberas/mixed.svg",
+            Yellow: IMAGES.bouquets["sunshine-gerberas"].yellow,
+            Orange: IMAGES.bouquets["sunshine-gerberas"].orange,
+            Mixed: IMAGES.bouquets["sunshine-gerberas"].mixed,
         },
 
         featured: false,
@@ -173,7 +233,8 @@ export const BOUQUETS = [
         id: "white-lilies-elegance",
         name: "White Lilies Elegance",
         category: "Lilies",
-        shortDescription: "Elegant lilies with soft greenery (buds may open over time).",
+        shortDescription:
+            "Elegant lilies with soft greenery (buds may open over time).",
         priceMin: 450,
         priceMax: 750,
         sizes: ["Standard", "Large"],
@@ -182,12 +243,12 @@ export const BOUQUETS = [
         addons: ["Card Note", "Vase", "Fairy Lights"],
         leadTimeHours: 24,
 
-        image: "assets/images/bouquets/white-lilies/default.svg",
+        image: IMAGES.bouquets["white-lilies-elegance"].default,
 
-        imageBase: "assets/images/bouquets/white-lilies",
-        defaultImage: "assets/images/bouquets/white-lilies/default.svg",
+        imageBase: "",
+        defaultImage: IMAGES.bouquets["white-lilies-elegance"].default,
         colorImages: {
-            White: "assets/images/bouquets/white-lilies/white.svg",
+            White: IMAGES.bouquets["white-lilies-elegance"].white,
         },
 
         featured: false,

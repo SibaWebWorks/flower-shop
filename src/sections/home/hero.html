@@ -1,68 +1,7 @@
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-card hero-onecol">
-    <h1 class="hero-title hero-title-strong">
-      <span class="hero-title-top">Flowers</span>
-      <span class="hero-title-bottom">that make you happy</span>
-    </h1>
-
-    <div class="hero-actions hero-actions-one">
-      <a class="btn btn-primary" href="./bouquets.html">Go to catalog</a>
-      <button class="btn btn-secondary" type="button" id="deliveryAreasBtn">
-        Check delivery areas
-      </button>
-    </div>
-
-    <div class="hero-media" aria-hidden="true">
-      <img
-        class="hero-img"
-        src="./assets/images/bouquets/blush-roses/default.svg"
-        alt=""
-        loading="eager"
-        decoding="async"
-      />
-    </div>
-
-    <p class="hero-note muted">
-      No checkout needed — we confirm availability, delivery fee, and final details on WhatsApp.
-    </p>
+<section class="hero" role="banner" aria-label="Hero">
+  <div class="hero-inner">
+    <h1>FLOWERS</h1>
+    <p>DESIGNED TO MAKE YOU FEEL SOMETHING</p>
+    <a class="btn-ghost" href="./bouquets.html">SHOP THE COLLECTION</a>
   </div>
 </section>
-
-<!-- Delivery areas modal (Home) -->
-<div class="modal" id="deliveryAreasModal" aria-hidden="true">
-  <div class="modal-backdrop" data-modal-close="true"></div>
-
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="deliveryAreasTitle">
-    <div class="modal-head">
-      <div>
-        <h3 class="m-0" id="deliveryAreasTitle">Delivery areas</h3>
-        <p class="muted m-0" id="deliveryAreasSubtitle">
-          We currently deliver in these Cape Town areas.
-        </p>
-      </div>
-
-      <button class="btn btn-sm btn-secondary modal-close" type="button" data-modal-close="true">
-        ✕
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <div class="delivery-areas-grid" id="deliveryAreasList">
-        <!-- populated by JS -->
-      </div>
-
-      <div class="modal-note">
-        <p class="muted m-0">
-          Not seeing your area? Message us on WhatsApp — we may still be able to help depending on availability.
-        </p>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-primary" type="button" data-modal-close="true">
-        Okay
-      </button>
-    </div>
-  </div>
-</div>

@@ -1,10 +1,73 @@
+// src/js/header.js
 import { getCartCount } from "./cart.js";
 
 const CART_KEY = "sb_cart_v1";
 const DESKTOP_MIN_WIDTH = 900;
 
+function $(sel, root = document) {
+  return root.querySelector(sel);
+}
+
+function $all(sel, root = document) {
+  return Array.from(root.querySelectorAll(sel));
+}
+
+function normalizePathFile() {
+  const file = (window.location.pathname.split("/").pop() || "").trim();
+  return file || "index.html";
+}
+
+/* ------------------------------
+   Active nav
+   - works with: <nav id="primaryNav" class="menu">...</nav>
+-------------------------------- */
+function setActiveNav() {
+  const nav = $("#primaryNav");
+  if (!nav) return;
+
+  const currentFile = normalizePathFile();
+
+  $all("a", nav).forEach((a) => {
+    a.classList.remove("active");
+    a.removeAttribute("aria-current");
+
+    const href = (a.getAttribute("href") || "").trim();
+    if (!href) return;
+
+    const cleaned = href.replace(/^\.\//, "");
+    const pathPart = cleaned.split("#")[0];
+    const filePart = pathPart.split("?")[0];
+
+    // Hash links: only mark active on index.html
+    if (cleaned.includes("#")) {
+      if (currentFile === "index.html" && (filePart === "" || filePart === "index.html")) {
+        a.classList.add("active");
+        a.setAttribute("aria-current", "page");
+      }
+      return;
+    }
+
+    if (filePart === currentFile) {
+      a.classList.add("active");
+      a.setAttribute("aria-current", "page");
+    }
+  });
+}
+
+/* ------------------------------
+   Footer year
+-------------------------------- */
+function setYear() {
+  const y = $("#y");
+  if (y) y.textContent = String(new Date().getFullYear());
+}
+
+/* ------------------------------
+   Cart badge (optional)
+   - Only runs if #cartCount exists in your header markup
+-------------------------------- */
 function updateCartBadge() {
-  const el = document.querySelector("#cartCount");
+  const el = $("#cartCount");
   if (!el) return;
 
   const count = getCartCount();
@@ -18,79 +81,36 @@ function updateCartBadge() {
   el.style.display = "inline-flex";
 }
 
-function normalizePathFile() {
-  const file = (window.location.pathname.split("/").pop() || "").trim();
-  return file || "index.html";
-}
-
-function setActiveNav() {
-  const currentFile = normalizePathFile();
-
-  document.querySelectorAll("nav.nav a").forEach((a) => {
-    a.classList.remove("active");
-    a.removeAttribute("aria-current");
-
-    const href = (a.getAttribute("href") || "").trim();
-    if (!href) return;
-
-    // Normalize href: remove leading ./, strip query/hash
-    const hrefNoPrefix = href.replace(/^\.\//, "");
-    const hrefFile = hrefNoPrefix.split("?")[0].split("#")[0];
-
-    // If link is an in-page section on index.html, only active on index.html
-    if (hrefNoPrefix.startsWith("index.html#")) {
-      if (currentFile === "index.html") {
-        a.classList.add("active");
-        a.setAttribute("aria-current", "page");
-      }
-      return;
-    }
-
-    // Normal page match
-    if (hrefFile === currentFile) {
-      a.classList.add("active");
-      a.setAttribute("aria-current", "page");
-    }
-  });
-}
-
 /* ------------------------------
-   Mobile menu (dropdown)
+   Mobile menu (NEZHNOST)
+   - toggles .is-open on #primaryNav
 -------------------------------- */
-
 function isDesktop() {
   return window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`).matches;
 }
 
 function setupMobileMenu() {
-  const header = document.querySelector(".site-head");
-  const btn = document.querySelector("#menuBtn");
-  const nav = document.querySelector("#primaryNav");
-
-  if (!header || !btn || !nav) return;
+  const btn = $(".menu-toggle");      // NEZHNOST button
+  const nav = $("#primaryNav");       // NEZHNOST nav
+  if (!btn || !nav) return;
 
   function setOpen(open) {
-    header.classList.toggle("nav-open", open);
+    nav.classList.toggle("is-open", open);
     btn.setAttribute("aria-expanded", open ? "true" : "false");
     btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-
-    const icon = btn.querySelector("i");
-    if (icon) {
-      icon.classList.toggle("fa-bars", !open);
-      icon.classList.toggle("fa-xmark", open);
-    }
   }
 
   // Initial: closed
   setOpen(false);
 
-  btn.addEventListener("click", () => {
-    const isOpen = header.classList.contains("nav-open");
-    setOpen(!isOpen);
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const open = nav.classList.contains("is-open");
+    setOpen(!open);
   });
 
   // Close menu when clicking a nav link (mobile only)
-  nav.querySelectorAll("a").forEach((a) => {
+  $all("a", nav).forEach((a) => {
     a.addEventListener("click", () => {
       if (!isDesktop()) setOpen(false);
     });
@@ -105,11 +125,20 @@ function setupMobileMenu() {
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") setOpen(false);
   });
+
+  // Close on click outside
+  document.addEventListener("click", (e) => {
+    if (!nav.classList.contains("is-open")) return;
+    const t = e.target;
+    if (btn.contains(t) || nav.contains(t)) return;
+    setOpen(false);
+  });
 }
 
 function refreshHeader() {
-  updateCartBadge();
+  setYear();
   setActiveNav();
+  updateCartBadge();
 }
 
 // Boot
@@ -121,6 +150,6 @@ window.addEventListener("storage", (e) => {
   if (e.key === CART_KEY) refreshHeader();
 });
 
-// Optional: allow other scripts to trigger refresh
+// Allow other scripts to trigger refresh
 window.__sbUpdateCartBadge = updateCartBadge;
 window.__sbRefreshHeader = refreshHeader;

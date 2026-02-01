@@ -1,4 +1,4 @@
-import { SHOP, BOUQUETS } from "./data.js";
+import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart } from "./cart.js";
 
 function $(sel) {
@@ -13,8 +13,9 @@ function $(sel) {
 function resolveImgSrc(src) {
   const s = String(src || "").trim();
   if (!s) return "";
-  if (/^https?:\/\//i.test(s)) return s;
-  return `./${s.replace(/^\.\//, "")}`;
+  if (/^(https?:)?\/\//i.test(s)) return s;      // https:// OR //cdn...
+  if (/^data:/i.test(s)) return s;               // data URLs
+  return `./${s.replace(/^\.\//, "")}`;          // local relative
 }
 
 /* ------------------------------
@@ -151,9 +152,11 @@ function renderCards(container, bouquets, { enableQuickAdd } = {}) {
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
 
-      const imgSrc = resolveImgSrc(b.image);
+      // config-driven: use the same image selection logic as the bouquet detail page
+      const preferredColor = b?.colors?.[0] ?? "";
+      const rawImg = getBouquetImage(b, preferredColor) || b.defaultImage || b.image || "";
+      const imgSrc = resolveImgSrc(rawImg);
 
-      // Keep cards consistent even without images (you can add later)
       const imgHtml = imgSrc
         ? `<img class="catalog-img" src="${imgSrc}" alt="${b.name}" loading="lazy"
               onerror="this.style.display='none'; this.closest('.catalog-media')?.classList.add('no-img');" />`

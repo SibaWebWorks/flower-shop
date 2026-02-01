@@ -1,15 +1,38 @@
-import { BOUQUETS } from "./data.js";
+// src/js/nezhn-home.js
+import { BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart } from "./cart.js";
 
 function pickHomeBouquets() {
   const featured = BOUQUETS.filter((b) => b.featured);
-  const list = (featured.length ? featured : BOUQUETS).slice(0, 3);
-  return list;
+  return (featured.length ? featured : BOUQUETS).slice(0, 3);
 }
 
-function imgSrc(b) {
-  if (!b?.image) return "";
-  return `./${String(b.image).replace(/^\.\//, "")}`;
+/**
+ * Resolve image src:
+ * - absolute URLs: https://..., http://..., or //...
+ * - data URLs
+ * - local paths: assets/... or ./assets/...
+ */
+function resolveImgSrc(src) {
+  const s = String(src || "").trim();
+  if (!s) return "";
+  if (/^(https?:)?\/\//i.test(s)) return s; // https:// or //cdn...
+  if (/^data:/i.test(s)) return s;          // data:...
+  return `./${s.replace(/^\.\//, "")}`;     // local relative
+}
+
+/**
+ * Use the same image selection logic as the bouquet page (config-first).
+ * Pick first color as default for home cards.
+ */
+function getHomeImage(b) {
+  const preferredColor = b?.colors?.[0] ?? "";
+  const raw =
+    getBouquetImage(b, preferredColor) ||
+    b.defaultImage ||
+    b.image ||
+    "";
+  return resolveImgSrc(raw);
 }
 
 function renderHomeCards() {
@@ -22,12 +45,20 @@ function renderHomeCards() {
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
       const priceText =
-        b.priceMin && b.priceMax ? `from R${b.priceMin}` : `R${b.priceMin || b.priceMax || ""}`;
+        b.priceMin && b.priceMax
+          ? `from R${b.priceMin}`
+          : `R${b.priceMin || b.priceMax || ""}`;
+
+      const img = getHomeImage(b);
 
       return `
         <article class="card">
           <div class="card-media">
-            ${b.image ? `<img src="${imgSrc(b)}" alt="${b.name}" loading="lazy" />` : ""}
+            ${img
+          ? `<img src="${img}" alt="${b.name}" loading="lazy"
+                       onerror="this.style.display='none';" />`
+          : ""
+        }
             <button class="fav" type="button" aria-label="Save">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path

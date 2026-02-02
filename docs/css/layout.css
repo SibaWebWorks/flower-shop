@@ -1,7 +1,8 @@
+/* Container becomes the flower-template "wrap" */
 .container {
-  max-width: 1060px;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 28px 18px;
+  padding: 0 clamp(14px, 3vw, 18px) clamp(30px, 5vw, 40px);
 }
 
 /* Single source of truth for section spacing */
@@ -10,15 +11,32 @@
 }
 
 /* ==========================
-   Header / brand (LOCKED)
+   Topbar (new)
+   ========================== */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #3a3a3a;
+  text-transform: uppercase;
+}
+
+/* ==========================
+   Header / nav shell (JS hooks preserved)
    ========================== */
 
 .site-head {
-  display: grid;
-  gap: 14px;
-  align-items: start;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 14px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .brand {
@@ -26,220 +44,174 @@
   gap: 6px;
 }
 
-.brand-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-}
-
-.brand-link:hover {
-  text-decoration: none;
-}
-
 .brand-name {
   font-family: var(--font-head);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  font-size: 34px;
-  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-size: 18px;
+  line-height: 1.1;
 }
 
 .brand-sub {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.60);
 }
 
-/* --------------------------
-   Mobile menu button
-   -------------------------- */
-
+/* Mobile menu button stays for JS (id=menuBtn) but looks like template */
 .menu-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-
-  padding: 10px 12px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
   border-radius: 999px;
-
-  border: 1px solid rgba(17, 17, 17, 0.18);
-  background: rgba(17, 17, 17, 0.04);
-  color: var(--text);
-
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 13px;
-
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.55);
   cursor: pointer;
-  user-select: none;
 
-  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+  display: none;
+  place-items: center;
+  gap: 0;
+}
+
+.menu-btn .menu-btn-text {
+  display: none;
 }
 
 .menu-btn i {
   font-size: 14px;
-  opacity: 0.9;
-}
-
-.menu-btn:hover {
-  background: rgba(17, 17, 17, 0.07);
-  border-color: rgba(17, 17, 17, 0.22);
-  transform: translateY(-1px);
-}
-
-/* --------------------------
-   Nav
-   -------------------------- */
-
-.nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.nav a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.01em;
-
-  padding: 10px 12px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-
-  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
-}
-
-.nav a i {
-  font-size: 14px;
   opacity: 0.85;
 }
 
+.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Primary nav (must remain nav.nav for header.js) */
+.nav {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  justify-content: flex-end;
+
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3d3d3d;
+}
+
+.nav a {
+  padding: 6px 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  border: 0;
+}
+
 .nav a:hover {
-  background: rgba(17, 17, 17, 0.05);
-  border-color: rgba(17, 17, 17, 0.10);
-  text-decoration: none;
-  transform: translateY(-1px);
+  border-bottom-color: rgba(0, 0, 0, 0.25);
+  background: transparent;
+  transform: none;
 }
 
-/* ACTIVE TAB: supported by header.js adding `.active` */
+/* Active tab from header.js */
 .nav a.active {
-  background: rgba(17, 17, 17, 0.08);
-  border-color: rgba(17, 17, 17, 0.18);
+  border-bottom-color: rgba(0, 0, 0, 0.35);
 }
 
-/* Make the cart badge sit nicely */
-.nav a .badge {
-  margin-left: 2px;
+/* Hide FontAwesome icons in nav for the cleaner template look */
+.nav a i {
+  display: none;
+}
+
+/* Cart badge */
+.badge {
+  display: none;
+  margin-left: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
 }
 
 /* --------------------------
-   Mobile dropdown behavior (animated)
+   Mobile dropdown behavior (keep your existing JS state: .site-head.nav-open)
    -------------------------- */
 
-/* On small screens: header becomes 2-column (brand + menu), nav drops below */
 @media (max-width: 899px) {
-  .site-head {
-    grid-template-columns: 1fr auto;
-    align-items: center;
+  .menu-btn {
+    display: grid;
   }
 
-  /* NAV as animated dropdown panel (no display:none) */
+  .site-head {
+    flex-wrap: wrap;
+    padding-bottom: 54px;
+    position: relative;
+  }
+
   .nav {
-    grid-column: 1 / -1;
-
-    /* layout */
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    gap: 14px;
 
-    /* spacing + divider */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% - 40px);
+
     margin-top: 10px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
+    padding: 14px 14px;
 
-    /* animation state (closed) */
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+
+    /* Closed state */
     max-height: 0;
     opacity: 0;
     transform: translateY(-6px);
     overflow: hidden;
     pointer-events: none;
 
-    transition:
-      max-height 220ms ease,
-      opacity 180ms ease,
-      transform 220ms ease;
+    transition: max-height 220ms ease, opacity 180ms ease, transform 220ms ease;
   }
 
-  /* Open state */
   .site-head.nav-open .nav {
-    max-height: 420px;
-    /* enough for links; avoid huge value */
+    max-height: 520px;
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
   }
 
-  /* Make links easier to tap on mobile */
   .nav a {
     width: 100%;
-    justify-content: flex-start;
+    border-bottom: 0;
+    padding: 10px 12px;
     border-radius: 14px;
-  }
-}
-
-/* Desktop alignment */
-@media (min-width: 900px) {
-  .site-head {
-    grid-template-columns: 1fr auto;
-    align-items: center;
+    border: 1px solid transparent;
   }
 
-  .menu-btn {
-    display: none;
+  .nav a:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.10);
   }
 
-  .nav {
-    justify-content: flex-end;
+  .nav a.active {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.12);
   }
 }
 
 /* ==========================
-   Section headers / grids
-   ========================== */
-
-.section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.section-head h2 {
-  margin-bottom: 0;
-}
-
-/* Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
-}
-
-@media (min-width: 720px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-/* ==========================
-   Small utility layout helpers
+   Layout helpers (keep yours)
    ========================== */
 
 .stack {

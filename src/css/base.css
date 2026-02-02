@@ -1,21 +1,26 @@
 :root {
-  /* Neutral palette (black/white/grey) */
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --text: #111111;
-  --muted: #6b7280;
-  --border: rgba(17, 17, 17, 0.10);
-  --card: #fafafa;
+  /* Flower template imagery hooks (optional later; safe to add now) */
+  --img-hero: url("https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg");
+
+  /* Palette */
+  --page-bg: #e9e7e4;
+  --panel: #ffffff;
+  --ink: #222;
+  --muted: #6b6b6b;
+  --line: rgba(0, 0, 0, 0.12);
+
+  /* Layout */
+  --max: 1100px;
 
   /* Shape + elevation */
   --radius: 14px;
   --radius-lg: 20px;
-  --shadow-soft: 0 10px 22px rgba(17, 17, 17, 0.06);
-  --shadow: 0 16px 40px rgba(17, 17, 17, 0.10);
+  --shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.06);
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.10);
 
   /* Typography */
   --font-body: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  --font-head: "Poppins", "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --font-head: "Cormorant Garamond", serif;
 }
 
 * {
@@ -27,16 +32,13 @@ body {
   height: 100%;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
   font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
   line-height: 1.55;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -58,33 +60,34 @@ h1,
 h2,
 h3 {
   font-family: var(--font-head);
-  line-height: 1.15;
+  font-weight: 300;
+  line-height: 1.05;
   margin: 0 0 10px;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
 }
 
 h1 {
-  font-size: 34px;
+  font-size: clamp(44px, 6vw, 72px);
 }
 
 h2 {
-  font-size: 24px;
+  font-size: clamp(30px, 4vw, 56px);
 }
 
 h3 {
-  font-size: 18px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.12em;
 }
 
 p {
   margin: 0 0 12px;
 }
 
-.price {
-  font-weight: 800;
-}
-
 :focus-visible {
-  outline: 3px solid rgba(17, 17, 17, 0.22);
-  outline-offset: 2px;
+  outline: 2px solid rgba(0, 0, 0, 0.45);
+  outline-offset: 3px;
   border-radius: 10px;
 }

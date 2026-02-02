@@ -1,4 +1,4 @@
-import { SHOP, BOUQUETS } from "./data.js";
+import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart } from "./cart.js";
 
 function $(sel) {
@@ -138,10 +138,8 @@ function resolveImgSrc(input) {
   const raw = String(input || "").trim();
   if (!raw) return "";
 
-  // Absolute URL: use as-is
   if (/^https?:\/\//i.test(raw)) return raw;
 
-  // Relative: ensure it starts with ./ for your static site
   const noPrefix = raw.replace(/^\.\//, "");
   return `./${noPrefix}`;
 }
@@ -156,10 +154,8 @@ function renderCards(container, bouquets, { enableQuickAdd } = {}) {
   container.innerHTML = bouquets
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
-
       const src = resolveImgSrc(b.image);
 
-      // Keep cards consistent even without images
       const imgHtml = src
         ? `<img class="catalog-img" src="${src}" alt="${b.name}" loading="lazy"
               onerror="this.style.display='none'; this.closest('.catalog-media')?.classList.add('no-img');" />`
@@ -204,15 +200,15 @@ function wireQuickAdd(container) {
       const b = BOUQUETS.find((x) => x.id === id);
       if (!b) return;
 
-      // Quick add uses first options (fast path)
       const size = b.sizes?.[0] ?? null;
       const color = b.colors?.[0] ?? null;
 
-      // If something is missing, fall back to customise page (no broken cart items)
       if (!size || !color) {
         window.location.href = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
         return;
       }
+
+      const image = getBouquetImage(b, color) || b.image || "";
 
       addToCart({
         id: b.id,
@@ -221,6 +217,7 @@ function wireQuickAdd(container) {
         priceMax: b.priceMax,
         size,
         color,
+        image,
         addons: [],
         qty: 1,
       });
@@ -261,7 +258,6 @@ function hydrateCategoryOptions() {
     a.localeCompare(b)
   );
 
-  // keep first option already in HTML
   cats.forEach((c) => {
     const opt = document.createElement("option");
     opt.value = c;
@@ -279,10 +275,8 @@ function applyFiltersAndSort() {
 
   let list = [...BOUQUETS];
 
-  // Filter: category
   if (cat) list = list.filter((b) => (b.category || "").trim() === cat);
 
-  // Filter: search
   if (q) {
     list = list.filter((b) => {
       const hay = [
@@ -299,7 +293,6 @@ function applyFiltersAndSort() {
     });
   }
 
-  // Sort
   if (sort === "featured") {
     list.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
   } else if (sort === "price-asc") {

@@ -6,6 +6,18 @@ const clearBtn = document.querySelector("#clearCartBtn");
 const checkoutBtn = document.querySelector("#checkoutBtn");
 
 /* ------------------------------
+   Helpers: resolve image URLs
+-------------------------------- */
+
+function resolveImgSrc(input) {
+  const raw = String(input || "").trim();
+  if (!raw) return "";
+  if (/^https?:\/\//i.test(raw)) return raw;
+  const noPrefix = raw.replace(/^\.\//, "");
+  return `./${noPrefix}`;
+}
+
+/* ------------------------------
    Delivery Date (Cart-level)
 -------------------------------- */
 
@@ -77,7 +89,6 @@ function clearDeliveryDate() {
 function setDeliveryDate(isoDate) {
   const todayIso = toISODateLocal(new Date());
 
-  // Prevent past dates (soft guard)
   if (isoDate && isoDate < todayIso) {
     isoDate = todayIso;
   }
@@ -206,7 +217,6 @@ function clearDeliveryArea() {
 function hydrateDeliveryAreas() {
   if (!deliveryAreaSelect) return;
 
-  // Keep the first "Not selected" option, clear the rest
   const first = deliveryAreaSelect.querySelector('option[value=""]');
   deliveryAreaSelect.innerHTML = "";
   if (first) deliveryAreaSelect.appendChild(first);
@@ -237,7 +247,6 @@ function isValidDeliveryArea(area) {
 function updateDeliveryAreaUI() {
   let selected = readDeliveryArea();
 
-  // If data.js changed and saved value is no longer valid, clear it
   if (selected && !isValidDeliveryArea(selected)) {
     localStorage.removeItem(DELIVERY_AREA_KEY);
     selected = "";
@@ -338,7 +347,6 @@ function renderEmpty() {
   setDeliveryDateVisible(false);
   setDeliveryAreaVisible(false);
 
-  // Reset displayed labels (so when cart is re-filled it starts clean)
   updateDeliveryUI();
   updateDeliveryAreaUI();
 
@@ -418,7 +426,8 @@ function render() {
       const lineMin = (i.priceMin || 0) * (i.qty || 1);
       const lineMax = (i.priceMax || 0) * (i.qty || 1);
 
-      const imgSrc = resolveItemImage(i, b);
+      const imgRaw = resolveItemImage(i, b);
+      const imgSrc = resolveImgSrc(imgRaw);
       const imgAlt = `${i.name}${i.color ? ` (${i.color})` : ""}`;
 
       return `
@@ -428,7 +437,7 @@ function render() {
               <div class="cart-item-meta">
                 <div class="cart-item-head">
                   ${imgSrc
-          ? `<img class="cart-thumb" src="./${String(imgSrc).replace(/^\.\//, "")}" alt="${imgAlt}" loading="lazy"
+          ? `<img class="cart-thumb" src="${imgSrc}" alt="${imgAlt}" loading="lazy"
                            onerror="this.style.display='none';" />`
           : ""
         }
@@ -504,7 +513,6 @@ function wire() {
 
       removeItem(key);
 
-      // If cart becomes empty, clear delivery bits (clean UX)
       if (!getCart().length) {
         clearDeliveryDate();
         clearDeliveryArea();

@@ -54,6 +54,7 @@ export function addToCart(item) {
     priceMax: Number(item.priceMax) || 0,
     size: item.size ? String(item.size) : null,
     color: item.color ? String(item.color) : null,
+    image: item.image ? String(item.image) : null, // ✅ store image (URL or relative)
     addons: normaliseAddons(item.addons),
     qty: Math.max(1, Number(item.qty) || 1),
   };
@@ -63,6 +64,8 @@ export function addToCart(item) {
   const existing = cart.find((x) => x.key === key);
   if (existing) {
     existing.qty = (Number(existing.qty) || 0) + payload.qty;
+    // If we ever add a newer image, keep it
+    if (payload.image) existing.image = payload.image;
   } else {
     cart.push({ ...payload, key });
   }
@@ -108,6 +111,9 @@ export function updateItem(key, patch) {
   nextCandidate.color = normaliseStringOrNull(nextCandidate.color);
   nextCandidate.addons = normaliseAddons(nextCandidate.addons);
 
+  // Keep image nullable + trimmed
+  nextCandidate.image = normaliseStringOrNull(nextCandidate.image);
+
   // Recompute key when options change
   const nextKey = stableKey(nextCandidate);
 
@@ -122,22 +128,21 @@ export function updateItem(key, patch) {
   const existingIdx = cart.findIndex((x) => x.key === nextKey);
 
   if (existingIdx !== -1) {
-    // Merge qty into the existing line item
     const mergedQty =
       (Number(cart[existingIdx].qty) || 0) + (Number(nextCandidate.qty) || 0);
 
     cart[existingIdx] = {
       ...cart[existingIdx],
       qty: Math.max(1, mergedQty),
+      // Prefer the newest image if present
+      image: nextCandidate.image || cart[existingIdx].image || null,
     };
 
-    // Remove the old line item
     cart.splice(idx, 1);
     writeCart(cart);
     return;
   }
 
-  // No collision -> replace item with new key
   cart[idx] = { ...nextCandidate, key: nextKey };
   writeCart(cart);
 }

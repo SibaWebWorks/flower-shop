@@ -14,12 +14,10 @@ export function openWhatsAppOrder(order) {
         " ",
 
         "Please let me know availability and delivery options.",
-        "Thank you."
+        "Thank you.",
     ].filter(Boolean);
 
-    // IMPORTANT: join with single newline
     const message = sections.join("\n");
-
     const url = `https://wa.me/${SHOP.whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
 }

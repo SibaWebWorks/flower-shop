@@ -76,20 +76,30 @@ export function getBouquetImage(bouquet, color) {
  * Keep them centralized so swapping later is easy.
  */
 const PEXELS = {
-    blushPink: "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
-    softWhite: "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
+    blushPink:
+        "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+    softWhite:
+        "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
 
-    redRoses: "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
-    deepRed: "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+    redRoses:
+        "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
+    deepRed:
+        "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
 
-    pastelWrap: "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
-    mixedPastel: "https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg",
+    pastelWrap:
+        "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+    mixedPastel:
+        "https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg",
 
-    sunshineYellow: "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
-    warmOrange: "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
-    brightMixed: "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
+    sunshineYellow:
+        "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+    warmOrange:
+        "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+    brightMixed:
+        "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
 
-    whiteLilies: "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
+    whiteLilies:
+        "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
 };
 
 export const BOUQUETS = [

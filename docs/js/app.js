@@ -128,6 +128,24 @@ function midPrice(b) {
   return (a + c) / 2;
 }
 
+/**
+ * Normalize image source so it works for:
+ * - absolute URLs (https://...)
+ * - relative paths (assets/...)
+ * - already-prefixed paths (./assets/...)
+ */
+function resolveImgSrc(input) {
+  const raw = String(input || "").trim();
+  if (!raw) return "";
+
+  // Absolute URL: use as-is
+  if (/^https?:\/\//i.test(raw)) return raw;
+
+  // Relative: ensure it starts with ./ for your static site
+  const noPrefix = raw.replace(/^\.\//, "");
+  return `./${noPrefix}`;
+}
+
 /* ------------------------------
    Card rendering
 -------------------------------- */
@@ -139,15 +157,17 @@ function renderCards(container, bouquets, { enableQuickAdd } = {}) {
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
 
-      // Keep cards consistent even without images (you can add later)
-      const imgHtml = b.image
-        ? `<img class="catalog-img" src="./${b.image.replace(/^\.\//, "")}" alt="${b.name}" loading="lazy"
+      const src = resolveImgSrc(b.image);
+
+      // Keep cards consistent even without images
+      const imgHtml = src
+        ? `<img class="catalog-img" src="${src}" alt="${b.name}" loading="lazy"
               onerror="this.style.display='none'; this.closest('.catalog-media')?.classList.add('no-img');" />`
         : "";
 
       return `
         <article class="card catalog-card">
-          <div class="catalog-media ${b.image ? "" : "no-img"}">
+          <div class="catalog-media ${src ? "" : "no-img"}">
             ${imgHtml}
           </div>
 

@@ -60,7 +60,8 @@ export function getBouquetImage(bouquet, color) {
         return bouquet.colorImages[selected];
     }
 
-    // 2) try slug-based guess (useful if you keep folders consistent)
+    // 2) try slug-based guess (legacy: used when imageBase points to local folder)
+    // NOTE: We are using URLs now, so imageBase is intentionally blank.
     if (selected && bouquet.imageBase) {
         const slug = slugifyColor(selected);
         if (slug) return `${bouquet.imageBase}/${slug}.svg`;
@@ -69,6 +70,27 @@ export function getBouquetImage(bouquet, color) {
     // 3) default
     return bouquet.defaultImage || bouquet.image || "";
 }
+
+/**
+ * Pexels image URLs (used everywhere now).
+ * Keep them centralized so swapping later is easy.
+ */
+const PEXELS = {
+    blushPink: "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+    softWhite: "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
+
+    redRoses: "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
+    deepRed: "https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg",
+
+    pastelWrap: "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+    mixedPastel: "https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg",
+
+    sunshineYellow: "https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg",
+    warmOrange: "https://images.pexels.com/photos/931163/pexels-photo-931163.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931163.jpg&fm=jpg",
+    brightMixed: "https://images.pexels.com/photos/931158/pexels-photo-931158.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931158.jpg&fm=jpg",
+
+    whiteLilies: "https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg",
+};
 
 export const BOUQUETS = [
     {
@@ -85,14 +107,14 @@ export const BOUQUETS = [
         leadTimeHours: 6,
 
         // Legacy (keep for compatibility)
-        image: "assets/images/bouquets/blush-roses/default.svg",
+        image: PEXELS.blushPink,
 
-        // New image system
-        imageBase: "assets/images/bouquets/blush-roses",
-        defaultImage: "assets/images/bouquets/blush-roses/default.svg",
+        // New image system (now URLs)
+        imageBase: "",
+        defaultImage: PEXELS.blushPink,
         colorImages: {
-            "Blush Pink": "assets/images/bouquets/blush-roses/blush-pink.svg",
-            White: "assets/images/bouquets/blush-roses/white.svg",
+            "Blush Pink": PEXELS.blushPink,
+            White: PEXELS.softWhite,
         },
 
         featured: true,
@@ -110,12 +132,12 @@ export const BOUQUETS = [
         addons: ["Chocolates", "Card Note", "Balloon"],
         leadTimeHours: 12,
 
-        image: "assets/images/bouquets/red-roses/default.svg",
+        image: PEXELS.redRoses,
 
-        imageBase: "assets/images/bouquets/red-roses",
-        defaultImage: "assets/images/bouquets/red-roses/default.svg",
+        imageBase: "",
+        defaultImage: PEXELS.redRoses,
         colorImages: {
-            Red: "assets/images/bouquets/red-roses/red.svg",
+            Red: PEXELS.deepRed,
         },
 
         featured: true,
@@ -133,13 +155,13 @@ export const BOUQUETS = [
         addons: ["Card Note", "Chocolates", "Balloon"],
         leadTimeHours: 12,
 
-        image: "assets/images/bouquets/pastel-mix/default.svg",
+        image: PEXELS.pastelWrap,
 
-        imageBase: "assets/images/bouquets/pastel-mix",
-        defaultImage: "assets/images/bouquets/pastel-mix/default.svg",
+        imageBase: "",
+        defaultImage: PEXELS.pastelWrap,
         colorImages: {
-            Pastel: "assets/images/bouquets/pastel-mix/pastel.svg",
-            Mixed: "assets/images/bouquets/pastel-mix/mixed.svg",
+            Pastel: PEXELS.pastelWrap,
+            Mixed: PEXELS.mixedPastel,
         },
 
         featured: true,
@@ -157,14 +179,14 @@ export const BOUQUETS = [
         addons: ["Card Note", "Vase"],
         leadTimeHours: 8,
 
-        image: "assets/images/bouquets/sunshine-gerberas/default.svg",
+        image: PEXELS.sunshineYellow,
 
-        imageBase: "assets/images/bouquets/sunshine-gerberas",
-        defaultImage: "assets/images/bouquets/sunshine-gerberas/default.svg",
+        imageBase: "",
+        defaultImage: PEXELS.sunshineYellow,
         colorImages: {
-            Yellow: "assets/images/bouquets/sunshine-gerberas/yellow.svg",
-            Orange: "assets/images/bouquets/sunshine-gerberas/orange.svg",
-            Mixed: "assets/images/bouquets/sunshine-gerberas/mixed.svg",
+            Yellow: PEXELS.sunshineYellow,
+            Orange: PEXELS.warmOrange,
+            Mixed: PEXELS.brightMixed,
         },
 
         featured: false,
@@ -182,12 +204,12 @@ export const BOUQUETS = [
         addons: ["Card Note", "Vase", "Fairy Lights"],
         leadTimeHours: 24,
 
-        image: "assets/images/bouquets/white-lilies/default.svg",
+        image: PEXELS.whiteLilies,
 
-        imageBase: "assets/images/bouquets/white-lilies",
-        defaultImage: "assets/images/bouquets/white-lilies/default.svg",
+        imageBase: "",
+        defaultImage: PEXELS.whiteLilies,
         colorImages: {
-            White: "assets/images/bouquets/white-lilies/white.svg",
+            White: PEXELS.whiteLilies,
         },
 
         featured: false,

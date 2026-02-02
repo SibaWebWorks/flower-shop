@@ -1,91 +1,199 @@
 /* Home page (hero + steps) */
 
-.hero {
-    display: grid;
-    gap: 16px;
-    margin-top: 18px;
-}
+/* ==========================
+   Home: Flower-template hero
+   ========================== */
 
-/* Card container */
-.hero-card {
+.hero {
+    margin-top: 6px;
     position: relative;
-    border: 1px solid var(--border);
-    background: #ffffff;
-    border-radius: var(--radius-lg);
-    padding: 22px;
-    box-shadow: var(--shadow-soft);
+    height: clamp(320px, 55vh, 420px);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 42%, rgba(0, 0, 0, 0.08) 100%),
+        var(--img-hero);
+
+    background-size: cover;
+    background-position: right center;
     overflow: hidden;
 }
 
-/* New 1-column hero layout */
-.hero-onecol {
-    display: grid;
-    gap: 14px;
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(235, 232, 228, 0.18);
+    pointer-events: none;
+    mix-blend-mode: screen;
 }
 
-/* New hero title style */
-.hero-title-strong {
-    margin: 0;
-    font-size: 44px;
-    letter-spacing: -0.03em;
+.hero-inner {
+    position: absolute;
+    left: clamp(18px, 6vw, 56px);
+    right: clamp(18px, 6vw, 56px);
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: min(520px, 100%);
 }
 
-.hero-title-top {
-    display: block;
+.hero h1 {
+    margin: 0 0 14px;
+    font-family: var(--font-head);
+    font-weight: 300;
+    font-size: clamp(48px, 9vw, 88px);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
+    color: #f7f7f7;
+    line-height: 0.92;
 }
 
-.hero-title-bottom {
-    display: block;
-    font-weight: 600;
-    font-size: 28px;
-    letter-spacing: -0.02em;
-    margin-top: 6px;
+.hero p {
+    margin: 0 0 18px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.90);
 }
 
-/* Actions row */
-.hero-actions {
+.hero-cta {
     display: flex;
-    flex-wrap: wrap;
     gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-ghost {
+    display: inline-block;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.btn-ghost.btn-ghost-alt {
+    border-color: rgba(255, 255, 255, 0.40);
+    color: rgba(255, 255, 255, 0.90);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ==========================
+   Home: Featured products grid
+   ========================== */
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: clamp(16px, 2.5vw, 22px);
+    padding-bottom: 6px;
     margin-top: 14px;
 }
 
-.hero-actions-one {
-    margin-top: 6px;
+/* Make your existing .card feel more like the flower template on home */
+.products .card {
+    border-radius: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
-.hero-btn-secondary {
-    border-color: rgba(17, 17, 17, 0.12);
-    background: rgba(255, 255, 255, 0.95);
-}
+/* =========================================================
+   FIX: Ensure images show correctly inside HOME featured cards
+   Your JS renderer uses catalog-style media (.catalog-media/.catalog-img)
+   but Home grid is now .products — so we normalize media display here.
+   ========================================================= */
 
-.hero-note {
-    font-size: 13px;
-    margin-top: 2px;
-}
-
-/* Big bouquet image block */
-.hero-media {
-    margin-top: 8px;
-    border-radius: calc(var(--radius-lg) - 2px);
-    border: 1px solid var(--border);
-    background: #ffffff;
+/* If the featured card uses the catalog media wrapper */
+.products .catalog-media {
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     overflow: hidden;
-    box-shadow: var(--shadow-soft);
+    background: #fff;
 }
 
-.hero-img {
+/* If the featured card image uses catalog class */
+.products .catalog-img {
     width: 100%;
-    height: clamp(260px, 36vw, 420px);
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     display: block;
-    padding: 18px;
 }
 
-/* Old right-side block (disable) */
-.hero-sparkle {
-    display: none;
+/* If the featured card uses ANY img without catalog class */
+.products .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* If the featured card has no dedicated media wrapper, prevent collapse */
+.products .card>img {
+    aspect-ratio: 1 / 1;
+}
+
+/* ==========================
+   Home: Banners
+   ========================== */
+
+.banners {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.banner {
+    height: clamp(150px, 18vw, 180px);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.24);
+}
+
+.banner .txt {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-head);
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: clamp(14px, 2.2vw, 18px);
+    text-align: center;
+    padding: 0 18px;
+    z-index: 1;
+}
+
+/* Banner images (Pexels) */
+.banner-1 {
+    background-image: url("https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg");
+}
+
+.banner-2 {
+    background-image: url("https://images.pexels.com/photos/931179/pexels-photo-931179.jpeg?cs=srgb&dl=pexels-secret-garden-333350-931179.jpg&fm=jpg");
+}
+
+.banner-3 {
+    background-image: url("https://images.pexels.com/photos/7666495/pexels-photo-7666495.jpeg?cs=srgb&dl=pexels-tara-winstead-7666495.jpg&fm=jpg");
 }
 
 /* Steps */

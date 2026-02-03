@@ -1,7 +1,7 @@
 .card {
   border: 1px solid var(--border);
   background: var(--card);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 16px;
   box-shadow: var(--shadow-soft);
   transform: translateY(0);
@@ -40,7 +40,7 @@
   gap: 8px;
 
   padding: 12px 14px;
-  border-radius: 999px;
+  border-radius: 0;
 
   border: 1px solid rgba(17, 17, 17, 0.18);
   background: rgba(17, 17, 17, 0.04);
@@ -111,6 +111,7 @@ a.btn {
 .btn-sm {
   padding: 8px 10px;
   font-size: 12px;
+  border-radius: 0;
 }
 
 /* --------------------------------
@@ -123,7 +124,7 @@ textarea,
 input[type="date"] {
   width: 100%;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 0;
   border: 1px solid rgba(17, 17, 17, 0.14);
   background: #ffffff;
   font-family: var(--font-body);
@@ -137,7 +138,7 @@ input[type="text"]:focus,
 textarea:focus,
 input[type="date"]:focus {
   border-color: rgba(17, 17, 17, 0.28);
-  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.08);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
   outline: none;
 }
 
@@ -154,7 +155,7 @@ label {
   align-items: center;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 label:hover {
@@ -195,20 +196,32 @@ input[type="radio"] {
   color: var(--muted);
 }
 
-/* Badge (Cart count) */
+/* --------------------------------
+   Badge (Cart count) — TEXT ONLY
+   (no square/pill/box)
+-------------------------------- */
+
 .badge {
-  display: none;
+  display: inline;
   margin-left: 6px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(17, 17, 17, 0.18);
-  background: rgba(17, 17, 17, 0.06);
+
+  /* remove chip styling */
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+
+  /* keep typography only */
   font-size: 12px;
   font-weight: 700;
-  align-items: center;
-  justify-content: center;
+  line-height: 1;
+  color: var(--text);
+
+  /* in case some JS toggles flex */
+  align-items: initial;
+  justify-content: initial;
 }
 
 /* --------------------------------
@@ -294,6 +307,25 @@ input[type="radio"] {
   border-bottom-color: rgba(17, 17, 17, 0.25);
 }
 
+/* IMPORTANT: If you still have .footer-cta anywhere, force it to NOT look like a button */
+.footer-cta {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+}
+
+.footer-cta:hover {
+  color: var(--text);
+  border-bottom-color: rgba(17, 17, 17, 0.25);
+}
+
 .footer-bottom {
   margin-top: 18px;
   padding: 14px 0 18px;
@@ -330,7 +362,7 @@ input[type="radio"] {
 
   border: 1px solid rgba(17, 17, 17, 0.14);
   background: rgba(255, 255, 255, 0.98);
-  border-radius: 14px;
+  border-radius: 0;
   box-shadow: var(--shadow-soft);
 
   padding: 10px 12px;
@@ -387,7 +419,7 @@ html.modal-open body {
 
   border: 1px solid rgba(17, 17, 17, 0.14);
   background: rgba(255, 255, 255, 0.98);
-  border-radius: 18px;
+  border-radius: 0;
   box-shadow: var(--shadow);
 
   padding: 16px;
@@ -432,7 +464,7 @@ html.modal-open body {
 .delivery-area-chip {
   border: 1px solid rgba(17, 17, 17, 0.12);
   background: rgba(17, 17, 17, 0.03);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 10px 12px;
   font-size: 13px;
   font-weight: 600;
@@ -441,7 +473,7 @@ html.modal-open body {
 .modal-note {
   border: 1px solid rgba(17, 17, 17, 0.10);
   background: rgba(17, 17, 17, 0.02);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 12px;
 }
 
@@ -452,7 +484,7 @@ html.modal-open body {
 .card-soft {
   border: 1px solid rgba(17, 17, 17, 0.10);
   background: rgba(255, 255, 255, 0.70);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 14px;
 }
 
@@ -595,7 +627,7 @@ label.addon-row {
   gap: 10px;
   align-items: center;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 label.addon-row:hover {
@@ -609,10 +641,27 @@ label.addon-row:hover {
   flex-wrap: wrap;
 }
 
+/* ---- FIX: Qty count is TEXT ONLY (no box) ---- */
 .cart-qty-count {
-  min-width: 26px;
-  text-align: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+
+  text-align: left;
   font-weight: 800;
+  line-height: 1;
+}
+
+/* Also protect the value span used in cart-page.js */
+.cart-qty-value {
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .cart-line-total {
@@ -629,7 +678,7 @@ label.addon-row:hover {
 .cart-thumb {
   width: 64px;
   height: 64px;
-  border-radius: 14px;
+  border-radius: 0;
   object-fit: cover;
   border: 1px solid var(--border);
   background: #fff;

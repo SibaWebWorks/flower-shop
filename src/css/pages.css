@@ -97,20 +97,12 @@
     margin-top: 14px;
 }
 
-/* Make your existing .card feel more like the flower template on home */
 .products .card {
     border-radius: 0;
     border: 1px solid rgba(0, 0, 0, 0.12);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
-/* =========================================================
-   FIX: Ensure images show correctly inside HOME featured cards
-   Your JS renderer uses catalog-style media (.catalog-media/.catalog-img)
-   but Home grid is now .products — so we normalize media display here.
-   ========================================================= */
-
-/* If the featured card uses the catalog media wrapper */
 .products .catalog-media {
     height: auto;
     aspect-ratio: 1 / 1;
@@ -119,7 +111,6 @@
     background: #fff;
 }
 
-/* If the featured card image uses catalog class */
 .products .catalog-img {
     width: 100%;
     height: 100%;
@@ -127,7 +118,6 @@
     display: block;
 }
 
-/* If the featured card uses ANY img without catalog class */
 .products .card img {
     width: 100%;
     height: 100%;
@@ -135,7 +125,6 @@
     display: block;
 }
 
-/* If the featured card has no dedicated media wrapper, prevent collapse */
 .products .card>img {
     aspect-ratio: 1 / 1;
 }
@@ -183,7 +172,6 @@
     z-index: 1;
 }
 
-/* Banner images (Pexels) */
 .banner-1 {
     background-image: url("https://images.pexels.com/photos/2879827/pexels-photo-2879827.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879827.jpg&fm=jpg");
 }
@@ -439,9 +427,17 @@
     min-width: 200px;
 }
 
-.detail-grid {
+/* NEW: two-column layout (image left, controls right) */
+.detail-layout {
     display: grid;
     gap: 14px;
+}
+
+@media (min-width: 900px) {
+    .detail-layout {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
 }
 
 .detail-card {
@@ -456,47 +452,32 @@
     margin: 0 0 10px;
 }
 
-.pill-grid {
+.detail-right {
     display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
 }
 
-@media (min-width: 720px) {
-    .detail-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .pill-grid {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
+/* Image preview: EXACT same visual concept as bouquet tiles (square) */
+.bouquet-preview {
+    padding: 0;
+    overflow: hidden;
 }
 
-.pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(17, 17, 17, 0.12);
-    background: rgba(17, 17, 17, 0.03);
-    cursor: pointer;
+.bouquet-preview-media {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #ffffff;
 }
 
-.pill:hover {
-    background: rgba(17, 17, 17, 0.05);
-    border-color: rgba(17, 17, 17, 0.18);
+.bouquet-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.pill input {
-    margin: 0;
-}
-
-.pill:has(input:checked) {
-    background: rgba(17, 17, 17, 0.08);
-    border-color: rgba(17, 17, 17, 0.28);
-}
-
+/* CTA */
 .detail-cta {
     display: flex;
     flex-wrap: wrap;
@@ -515,6 +496,28 @@
 
 .hint {
     max-width: 42ch;
+}
+
+/* ================================
+   FIX: REMOVE ROUNDING ON DROPDOWNS
+   (Size / Colour / Add-ons)
+   ================================ */
+
+/* Force native selects/inputs in bouquet detail to be sharp */
+.detail select,
+.detail input[type="text"],
+.detail input[type="date"],
+.detail textarea {
+    border-radius: 0 !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Also ensure the wrapper card doesn't create a rounded illusion */
+.detail .detail-card,
+.detail .detail-cta {
+    border-radius: 0;
 }
 
 /* ==========================
@@ -567,8 +570,6 @@
     }
 }
 
-/* Cards */
-
 /* NEW: make bouquets page match Spring Favorites (square tiles + 3-col grid) */
 .catalog-grid {
     display: grid;
@@ -593,7 +594,6 @@
     padding: 0;
 }
 
-/* Key change: square like Spring Favorites */
 .catalog-media {
     aspect-ratio: 1 / 1;
     border-bottom: 1px solid var(--border);

@@ -133,6 +133,40 @@ input[type="date"] {
   transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
 }
 
+/* ---- IMPORTANT: kill native rounding / OS styling ---- */
+select,
+input,
+textarea,
+button {
+  border-radius: 0 !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Keep selects looking like selects: add a clean arrow */
+select {
+  padding-right: 44px; /* space for arrow */
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(17, 17, 17, 0.65) 50%),
+    linear-gradient(135deg, rgba(17, 17, 17, 0.65) 50%, transparent 50%),
+    linear-gradient(to right, rgba(17, 17, 17, 0.14), rgba(17, 17, 17, 0.14));
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%,
+    calc(100% - 36px) 50%;
+  background-size:
+    6px 6px,
+    6px 6px,
+    1px 60%;
+  background-repeat: no-repeat;
+}
+
+/* Remove IE arrow (legacy, safe) */
+select::-ms-expand {
+  display: none;
+}
+
 select:focus,
 input[type="text"]:focus,
 textarea:focus,
@@ -198,14 +232,12 @@ input[type="radio"] {
 
 /* --------------------------------
    Badge (Cart count) — TEXT ONLY
-   (no square/pill/box)
 -------------------------------- */
 
 .badge {
   display: inline;
   margin-left: 6px;
 
-  /* remove chip styling */
   min-width: 0;
   height: auto;
   padding: 0;
@@ -213,15 +245,61 @@ input[type="radio"] {
   background: none;
   border-radius: 0;
 
-  /* keep typography only */
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
   color: var(--text);
 
-  /* in case some JS toggles flex */
   align-items: initial;
   justify-content: initial;
+}
+
+/* --------------------------------
+   Add-ons chips (multi-select UI)
+-------------------------------- */
+
+.addons-chips {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  background: rgba(17, 17, 17, 0.03);
+  border-radius: 0;
+  padding: 8px 10px;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chip-text {
+  line-height: 1;
+}
+
+.chip-x {
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  background: rgba(17, 17, 17, 0.04);
+  color: rgba(17, 17, 17, 0.9);
+  border-radius: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.chip-x:hover {
+  background: rgba(17, 17, 17, 0.07);
+  border-color: rgba(17, 17, 17, 0.22);
 }
 
 /* --------------------------------
@@ -689,3 +767,4 @@ label.addon-row:hover {
   display: grid;
   gap: 6px;
 }
+

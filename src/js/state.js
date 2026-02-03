@@ -10,15 +10,11 @@ function getBouquetId() {
   return params.get("id");
 }
 
-function getSelectedValue(name) {
-  const input = document.querySelector(`input[name="${name}"]:checked`);
-  return input ? input.value : null;
-}
-
-function getSelectedAddons() {
-  return Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(
-    (i) => i.value
-  );
+function getSelectValue(id) {
+  const el = document.querySelector(`#${id}`);
+  if (!el) return null;
+  const v = (el.value || "").trim();
+  return v ? v : null;
 }
 
 function updateHeaderCartBadge() {
@@ -49,7 +45,7 @@ function updateMiniCartBar() {
 }
 
 /* ------------------------------
-   Toast UX (non-blocking feedback)
+   Toast UX
 -------------------------------- */
 
 let toastTimer = null;
@@ -95,10 +91,9 @@ function updateBouquetImage(bouquet) {
   const img = document.querySelector("#bouquetImg");
   if (!img || !bouquet) return;
 
-  const color = getSelectedValue("color");
+  const color = getSelectValue("colorSelect");
   const src = getBouquetImage(bouquet, color);
 
-  // Avoid pointless DOM churn
   if (img.getAttribute("src") !== src) img.setAttribute("src", src);
 
   const chosen = color ? ` (${color})` : "";
@@ -106,45 +101,102 @@ function updateBouquetImage(bouquet) {
 }
 
 function wireImageSwap(bouquet) {
-  // initial draw
   updateBouquetImage(bouquet);
+  const color = document.querySelector("#colorSelect");
+  if (color) color.addEventListener("change", () => updateBouquetImage(bouquet));
+}
 
-  // when colour changes
-  document.querySelectorAll('input[name="color"]').forEach((el) => {
-    el.addEventListener("change", () => updateBouquetImage(bouquet));
+/* ------------------------------
+   Add-ons dropdown + chips (multi-select)
+-------------------------------- */
+
+const selectedAddons = new Set();
+
+function getSelectedAddons() {
+  return Array.from(selectedAddons);
+}
+
+function renderAddonChips() {
+  const wrap = document.querySelector("#addonsChips");
+  if (!wrap) return;
+
+  if (selectedAddons.size === 0) {
+    wrap.innerHTML = `<p class="muted" style="margin:0;">No add-ons selected.</p>`;
+    return;
+  }
+
+  wrap.innerHTML = Array.from(selectedAddons)
+    .map(
+      (a) => `
+      <span class="chip">
+        <span class="chip-text">${a}</span>
+        <button class="chip-x" type="button" aria-label="Remove ${a}" data-addon="${a}">×</button>
+      </span>
+    `
+    )
+    .join("");
+
+  wrap.querySelectorAll(".chip-x").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const val = btn.getAttribute("data-addon");
+      if (!val) return;
+      selectedAddons.delete(val);
+      syncAddonDropdownOptions();
+      renderAddonChips();
+    });
   });
+}
+
+function syncAddonDropdownOptions() {
+  const select = document.querySelector("#addonsSelect");
+  if (!select) return;
+
+  // show all options that are NOT selected
+  Array.from(select.options).forEach((opt) => {
+    if (!opt.value) return; // placeholder
+    opt.hidden = selectedAddons.has(opt.value);
+  });
+
+  // reset to placeholder after choosing
+  select.value = "";
+}
+
+function wireAddonsDropdown() {
+  const select = document.querySelector("#addonsSelect");
+  if (!select) return;
+
+  select.addEventListener("change", () => {
+    const val = getSelectValue("addonsSelect");
+    if (!val) return;
+
+    selectedAddons.add(val);
+    syncAddonDropdownOptions();
+    renderAddonChips();
+  });
+
+  // initial
+  syncAddonDropdownOptions();
+  renderAddonChips();
 }
 
 /* ------------------------------
    Render helpers
 -------------------------------- */
 
-function renderOptionPills({ name, options, type, selectedName }) {
-  if (!options?.length) return `<p class="muted">No options available.</p>`;
-
-  const items = options
-    .map((opt) => {
-      const id = `${name}-${String(opt).toLowerCase().replace(/\s+/g, "-")}`;
-
-      if (type === "radio") {
-        return `
-          <label class="pill" for="${id}">
-            <input id="${id}" type="radio" name="${selectedName}" value="${opt}">
-            <span>${opt}</span>
-          </label>
-        `;
-      }
-
-      return `
-        <label class="pill" for="${id}">
-          <input id="${id}" type="checkbox" value="${opt}">
-          <span>${opt}</span>
-        </label>
-      `;
-    })
+function renderSelect({ id, label, placeholder, options = [] }) {
+  const opts = (options || [])
+    .map((opt) => `<option value="${opt}">${opt}</option>`)
     .join("");
 
-  return `<div class="pill-grid">${items}</div>`;
+  return `
+    <div class="field">
+      <label class="muted field-label" for="${id}">${label}</label>
+      <select id="${id}">
+        <option value="">${placeholder || "Select an option"}</option>
+        ${opts}
+      </select>
+    </div>
+  `;
 }
 
 function renderBouquet(bouquet) {
@@ -172,68 +224,69 @@ function renderBouquet(bouquet) {
         </div>
       </div>
 
-      <!-- NEW: image card -->
-      <div class="card" style="padding: 14px;">
-        <img
-          id="bouquetImg"
-          src="${initialImg}"
-          alt="${bouquet.name}"
-          loading="eager"
-          style="width: 100%; height: 320px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border); background: #fff;"
-        />
-        <p class="muted" style="margin: 10px 0 0;">
-          Preview updates when you change colour.
-        </p>
-      </div>
-
-      <div class="detail-grid">
-        <div class="card detail-card">
-          <h3 class="detail-h">Size</h3>
-          <p class="muted detail-help">Choose one option.</p>
-          ${renderOptionPills({
-    name: "size",
-    options: bouquet.sizes,
-    type: "radio",
-    selectedName: "size",
-  })}
-        </div>
-
-        <div class="card detail-card">
-          <h3 class="detail-h">Colour</h3>
-          <p class="muted detail-help">Choose one option.</p>
-          ${renderOptionPills({
-    name: "color",
-    options: bouquet.colors,
-    type: "radio",
-    selectedName: "color",
-  })}
-        </div>
-
-        <div class="card detail-card">
-          <h3 class="detail-h">Add-ons</h3>
-          <p class="muted detail-help">Optional extras.</p>
-          ${renderOptionPills({
-    name: "addon",
-    options: bouquet.addons,
-    type: "checkbox",
-  })}
-        </div>
-      </div>
-
-      <div class="detail-cta card">
+      <div class="detail-layout">
+        <!-- LEFT: Image -->
         <div>
-          <h3 style="margin:0 0 6px;">Ready?</h3>
-          <p class="muted" style="margin:0;">
-            Select a size and colour, then add to cart.
-          </p>
+          <div class="card bouquet-preview">
+            <div class="bouquet-preview-media">
+              <img
+                id="bouquetImg"
+                class="bouquet-preview-img"
+                src="${initialImg}"
+                alt="${bouquet.name}"
+                loading="eager"
+              />
+            </div>
+          </div>
         </div>
 
-        <div class="detail-cta-actions">
-          <p id="selectionHint" class="muted hint" style="display:none;"></p>
-          <button id="addToCartBtn" class="btn btn-primary" type="button" disabled>
-            Add to cart
-          </button>
-          <a class="btn btn-secondary" href="./bouquets.html">Back to bouquets</a>
+        <!-- RIGHT: Controls -->
+        <div class="detail-right">
+          <div class="card detail-card">
+            <h3 class="detail-h">Customise</h3>
+            <p class="muted detail-help">Choose size and colour, then add optional extras.</p>
+
+            ${renderSelect({
+    id: "sizeSelect",
+    label: "Size",
+    placeholder: "Select size",
+    options: bouquet.sizes,
+  })}
+
+            ${renderSelect({
+    id: "colorSelect",
+    label: "Colour",
+    placeholder: "Select colour",
+    options: bouquet.colors,
+  })}
+
+            <!-- Add-ons: real dropdown + removable chips -->
+            ${renderSelect({
+    id: "addonsSelect",
+    label: "Add-ons",
+    placeholder: "Add an add-on",
+    options: bouquet.addons,
+  })}
+
+            <div class="addons-chips" id="addonsChips"></div>
+          </div>
+
+          <div class="detail-cta card">
+            <div>
+              <h3 style="margin:0 0 6px;">Ready?</h3>
+              <p class="muted" style="margin:0;">
+                Select a size and colour, then add to cart.
+              </p>
+            </div>
+
+            <div class="detail-cta-actions">
+              <p id="selectionHint" class="muted hint" style="display:none;"></p>
+              <button id="addToCartBtn" class="btn btn-primary" type="button" disabled>
+                Add to cart
+              </button>
+              <a class="btn btn-secondary" href="./bouquets.html">Back to bouquets</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -241,6 +294,8 @@ function renderBouquet(bouquet) {
 
   wireValidation(bouquet);
   wireImageSwap(bouquet);
+  wireAddonsDropdown();
+
   refreshButtonState();
   updateMiniCartBar();
 }
@@ -250,16 +305,17 @@ function renderBouquet(bouquet) {
 -------------------------------- */
 
 function wireValidation(bouquet) {
-  document
-    .querySelectorAll('input[name="size"], input[name="color"], input[type="checkbox"]')
-    .forEach((el) =>
-      el.addEventListener("change", () => {
-        refreshButtonState();
-        updateMiniCartBar();
-        // ensure image stays synced if colour changes
-        if (el.name === "color") updateBouquetImage(bouquet);
-      })
-    );
+  const size = document.querySelector("#sizeSelect");
+  const color = document.querySelector("#colorSelect");
+
+  const onChange = () => {
+    refreshButtonState();
+    updateMiniCartBar();
+    updateBouquetImage(bouquet);
+  };
+
+  if (size) size.addEventListener("change", onChange);
+  if (color) color.addEventListener("change", onChange);
 
   const btn = document.querySelector("#addToCartBtn");
   if (btn) btn.addEventListener("click", () => onAddToCart(bouquet));
@@ -270,8 +326,8 @@ function refreshButtonState() {
   const hint = document.querySelector("#selectionHint");
   if (!btn || !hint) return;
 
-  const size = getSelectedValue("size");
-  const color = getSelectedValue("color");
+  const size = getSelectValue("sizeSelect");
+  const color = getSelectValue("colorSelect");
 
   const missing = [];
   if (!size) missing.push("size");
@@ -291,8 +347,9 @@ function refreshButtonState() {
 function onAddToCart(bouquet) {
   if (!bouquet) return;
 
-  const size = getSelectedValue("size");
-  const color = getSelectedValue("color");
+  const size = getSelectValue("sizeSelect");
+  const color = getSelectValue("colorSelect");
+
   if (!size || !color) {
     refreshButtonState();
     return;
@@ -307,7 +364,7 @@ function onAddToCart(bouquet) {
     priceMax: bouquet.priceMax,
     size,
     color,
-    image, // NEW: store selected image per variant
+    image,
     addons: getSelectedAddons(),
     qty: 1,
   };
@@ -315,11 +372,7 @@ function onAddToCart(bouquet) {
   addToCart(item);
   updateHeaderCartBadge();
   updateMiniCartBar();
-
   showToast("Added to cart", bouquet.name);
-
-  const viewBtn = document.querySelector("#miniCartViewBtn");
-  if (viewBtn) viewBtn.style.display = "inline-flex";
 }
 
 /* ------------------------------

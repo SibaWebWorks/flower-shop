@@ -1,3 +1,4 @@
+// src/js/app.js
 import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart } from "./cart.js";
 
@@ -25,6 +26,7 @@ function ensureToast() {
 }
 
 let toastTimer = null;
+
 function showToast(text = "Done") {
   const toast = ensureToast();
   const t = $("#sbToastText");
@@ -87,7 +89,7 @@ function wireDeliveryAreasModal() {
 
   if (!btn || !modal || !list) return;
 
-  // populate on boot (fast + simple)
+  // populate on boot
   renderDeliveryAreas(list);
 
   btn.addEventListener("click", () => openModal(modal));
@@ -144,6 +146,57 @@ function resolveImgSrc(input) {
   return `./${noPrefix}`;
 }
 
+function safeFirst(arr) {
+  return Array.isArray(arr) && arr.length ? arr[0] : null;
+}
+
+function setResultsMeta({ shown, total }) {
+  const resultsMeta = $("#resultsMeta");
+  if (!resultsMeta) return;
+
+  if (total === 0) {
+    resultsMeta.textContent = "No bouquets available.";
+    return;
+  }
+
+  resultsMeta.textContent = `Showing ${shown} of ${total} bouquet${total === 1 ? "" : "s"}`;
+}
+
+/* ------------------------------
+   Empty states
+-------------------------------- */
+
+function renderNoResults(container) {
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="card stack">
+      <div class="stack">
+        <h3 class="m-0">No results</h3>
+        <p class="muted m-0">
+          Try a different search term, reset filters, or browse all bouquets.
+        </p>
+      </div>
+      <div class="row mt-10">
+        <button class="btn btn-secondary" id="noResultsResetBtn" type="button">Reset filters</button>
+      </div>
+    </div>
+  `;
+
+  const btn = $("#noResultsResetBtn");
+  btn?.addEventListener("click", () => {
+    const searchInput = $("#searchInput");
+    const categorySelect = $("#categorySelect");
+    const sortSelect = $("#sortSelect");
+
+    if (searchInput) searchInput.value = "";
+    if (categorySelect) categorySelect.value = "";
+    if (sortSelect) sortSelect.value = "featured";
+
+    applyFiltersAndSort();
+  });
+}
+
 /* ------------------------------
    Card rendering
 -------------------------------- */
@@ -151,10 +204,19 @@ function resolveImgSrc(input) {
 function renderCards(container, bouquets, { enableQuickAdd } = {}) {
   if (!container) return;
 
+  if (!Array.isArray(bouquets) || bouquets.length === 0) {
+    renderNoResults(container);
+    setResultsMeta({ shown: 0, total: BOUQUETS.length });
+    return;
+  }
+
   container.innerHTML = bouquets
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
-      const src = resolveImgSrc(b.image);
+
+      // ✅ Use the unified image system
+      const imgRaw = getBouquetImage(b, null) || b.defaultImage || b.image || "";
+      const src = resolveImgSrc(imgRaw);
 
       const imgHtml = src
         ? `<img class="catalog-img" src="${src}" alt="${b.name}" loading="lazy"
@@ -200,15 +262,17 @@ function wireQuickAdd(container) {
       const b = BOUQUETS.find((x) => x.id === id);
       if (!b) return;
 
-      const size = b.sizes?.[0] ?? null;
-      const color = b.colors?.[0] ?? null;
+      // Quick add uses the FIRST available options (safe defaults)
+      const size = safeFirst(b.sizes);
+      const color = safeFirst(b.colors);
 
+      // If we can't choose safely, route user to customise page
       if (!size || !color) {
         window.location.href = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
         return;
       }
 
-      const image = getBouquetImage(b, color) || b.image || "";
+      const image = getBouquetImage(b, color) || b.defaultImage || b.image || "";
 
       addToCart({
         id: b.id,
@@ -249,14 +313,11 @@ const searchInput = $("#searchInput");
 const categorySelect = $("#categorySelect");
 const sortSelect = $("#sortSelect");
 const resetBtn = $("#resetFiltersBtn");
-const resultsMeta = $("#resultsMeta");
 
 function hydrateCategoryOptions() {
   if (!categorySelect) return;
 
-  const cats = uniq(BOUQUETS.map((b) => b.category)).sort((a, b) =>
-    a.localeCompare(b)
-  );
+  const cats = uniq(BOUQUETS.map((b) => b.category)).sort((a, b) => a.localeCompare(b));
 
   cats.forEach((c) => {
     const opt = document.createElement("option");
@@ -294,7 +355,12 @@ function applyFiltersAndSort() {
   }
 
   if (sort === "featured") {
-    list.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+    // featured first, then name
+    list.sort((a, b) => {
+      const feat = Number(!!b.featured) - Number(!!a.featured);
+      if (feat !== 0) return feat;
+      return String(a.name).localeCompare(String(b.name));
+    });
   } else if (sort === "price-asc") {
     list.sort((a, b) => midPrice(a) - midPrice(b));
   } else if (sort === "price-desc") {
@@ -304,11 +370,7 @@ function applyFiltersAndSort() {
   }
 
   renderCards(catalogGrid, list, { enableQuickAdd: true });
-
-  if (resultsMeta) {
-    const total = BOUQUETS.length;
-    resultsMeta.textContent = `${list.length} of ${total} bouquets`;
-  }
+  setResultsMeta({ shown: list.length, total: BOUQUETS.length });
 }
 
 function wireCatalogControls() {

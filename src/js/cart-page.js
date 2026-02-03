@@ -1,5 +1,7 @@
+// src/js/cart-page.js
 import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { getCart, clearCart, updateQty, removeItem, updateItem } from "./cart.js";
+import { openWhatsAppCart } from "./whatsapp.js";
 
 const cartList = document.querySelector("#cartList");
 const clearBtn = document.querySelector("#clearCartBtn");
@@ -585,48 +587,6 @@ function wire() {
 }
 
 /* ------------------------------
-   WhatsApp message
--------------------------------- */
-
-function buildWhatsAppMessage() {
-  const cart = getCart();
-  if (!cart.length) return null;
-
-  const est = getEstimate(cart);
-  const deliveryDate = readDeliveryDate();
-  const deliveryArea = readDeliveryArea();
-
-  const lines = ["Hi, I’d like to place an order.", " "];
-
-  if (deliveryDate) {
-    lines.push(`Delivery date: ${formatNiceDate(deliveryDate)} (${deliveryDate})`);
-    lines.push(" ");
-  }
-
-  if (deliveryArea) {
-    lines.push(`Delivery area: ${deliveryArea}`);
-    lines.push(" ");
-  }
-
-  lines.push("Items:");
-
-  cart.forEach((i, idx) => {
-    lines.push(`${idx + 1}) ${i.name} (Qty: ${i.qty || 1})`);
-    if (i.size) lines.push(`   - Size: ${i.size}`);
-    if (i.color) lines.push(`   - Color: ${i.color}`);
-    if (i.addons?.length) lines.push(`   - Add-ons: ${i.addons.join(", ")}`);
-    lines.push(`   - Est. price: ${money(i.priceMin)}–${money(i.priceMax)} each`);
-    lines.push(" ");
-  });
-
-  lines.push(`Estimated bouquet total: ${money(est.min)}–${money(est.max)}`);
-  lines.push("Please confirm availability, delivery options, delivery fee, and final total.");
-  lines.push("Thank you.");
-
-  return lines.join("\n");
-}
-
-/* ------------------------------
    Buttons
 -------------------------------- */
 
@@ -644,10 +604,15 @@ clearBtn?.addEventListener("click", () => {
 });
 
 checkoutBtn?.addEventListener("click", () => {
-  const msg = buildWhatsAppMessage();
-  if (!msg) return;
-  const url = `https://wa.me/${SHOP.whatsappNumber}?text=${encodeURIComponent(msg)}`;
-  window.open(url, "_blank");
+  const cart = getCart();
+  if (!cart.length) return;
+
+  openWhatsAppCart({
+    cart,
+    estimate: getEstimate(cart),
+    deliveryDate: readDeliveryDate(),
+    deliveryArea: readDeliveryArea(),
+  });
 });
 
 /* ------------------------------

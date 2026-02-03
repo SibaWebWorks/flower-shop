@@ -1,3 +1,4 @@
+// src/js/state.js
 import { BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart, getCartCount } from "./cart.js";
 
@@ -21,6 +22,16 @@ function updateHeaderCartBadge() {
   if (typeof window.__sbUpdateCartBadge === "function") {
     window.__sbUpdateCartBadge();
   }
+}
+
+function resolveBouquetImage(bouquet, color) {
+  if (!bouquet) return "";
+  return (
+    getBouquetImage(bouquet, color) ||
+    bouquet.defaultImage ||
+    bouquet.image ||
+    ""
+  );
 }
 
 /* ------------------------------
@@ -92,9 +103,9 @@ function updateBouquetImage(bouquet) {
   if (!img || !bouquet) return;
 
   const color = getSelectValue("colorSelect");
-  const src = getBouquetImage(bouquet, color);
+  const src = resolveBouquetImage(bouquet, color);
 
-  if (img.getAttribute("src") !== src) img.setAttribute("src", src);
+  if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
 
   const chosen = color ? ` (${color})` : "";
   img.setAttribute("alt", `${bouquet.name}${chosen}`);
@@ -111,6 +122,10 @@ function wireImageSwap(bouquet) {
 -------------------------------- */
 
 const selectedAddons = new Set();
+
+function resetSelectedAddons() {
+  selectedAddons.clear();
+}
 
 function getSelectedAddons() {
   return Array.from(selectedAddons);
@@ -151,13 +166,11 @@ function syncAddonDropdownOptions() {
   const select = document.querySelector("#addonsSelect");
   if (!select) return;
 
-  // show all options that are NOT selected
   Array.from(select.options).forEach((opt) => {
     if (!opt.value) return; // placeholder
     opt.hidden = selectedAddons.has(opt.value);
   });
 
-  // reset to placeholder after choosing
   select.value = "";
 }
 
@@ -174,7 +187,6 @@ function wireAddonsDropdown() {
     renderAddonChips();
   });
 
-  // initial
   syncAddonDropdownOptions();
   renderAddonChips();
 }
@@ -184,9 +196,8 @@ function wireAddonsDropdown() {
 -------------------------------- */
 
 function renderSelect({ id, label, placeholder, options = [] }) {
-  const opts = (options || [])
-    .map((opt) => `<option value="${opt}">${opt}</option>`)
-    .join("");
+  const list = Array.isArray(options) ? options : [];
+  const opts = list.map((opt) => `<option value="${opt}">${opt}</option>`).join("");
 
   return `
     <div class="field">
@@ -199,16 +210,36 @@ function renderSelect({ id, label, placeholder, options = [] }) {
   `;
 }
 
+function renderNotFound(container) {
+  container.innerHTML = `
+    <div class="card stack">
+      <div class="stack">
+        <h3 class="m-0">Bouquet not found</h3>
+        <p class="muted m-0">
+          The bouquet link may be incorrect. Please go back and choose a bouquet again.
+        </p>
+      </div>
+      <div class="row mt-10">
+        <a class="btn btn-primary" href="./bouquets.html">Back to bouquets</a>
+      </div>
+    </div>
+  `;
+}
+
 function renderBouquet(bouquet) {
   const container = document.querySelector("#bouquetDetail");
   if (!container) return;
 
   if (!bouquet) {
-    container.innerHTML = "<p>Sorry, bouquet not found.</p>";
+    renderNotFound(container);
+    updateMiniCartBar();
     return;
   }
 
-  const initialImg = getBouquetImage(bouquet, null);
+  // Prevent add-ons leaking between bouquets
+  resetSelectedAddons();
+
+  const initialImg = resolveBouquetImage(bouquet, null);
 
   container.innerHTML = `
     <div class="detail">
@@ -235,6 +266,7 @@ function renderBouquet(bouquet) {
                 src="${initialImg}"
                 alt="${bouquet.name}"
                 loading="eager"
+                onerror="this.style.display='none';"
               />
             </div>
           </div>
@@ -260,7 +292,6 @@ function renderBouquet(bouquet) {
     options: bouquet.colors,
   })}
 
-            <!-- Add-ons: real dropdown + removable chips -->
             ${renderSelect({
     id: "addonsSelect",
     label: "Add-ons",
@@ -314,11 +345,11 @@ function wireValidation(bouquet) {
     updateBouquetImage(bouquet);
   };
 
-  if (size) size.addEventListener("change", onChange);
-  if (color) color.addEventListener("change", onChange);
+  size?.addEventListener("change", onChange);
+  color?.addEventListener("change", onChange);
 
   const btn = document.querySelector("#addToCartBtn");
-  if (btn) btn.addEventListener("click", () => onAddToCart(bouquet));
+  btn?.addEventListener("click", () => onAddToCart(bouquet));
 }
 
 function refreshButtonState() {
@@ -355,9 +386,9 @@ function onAddToCart(bouquet) {
     return;
   }
 
-  const image = getBouquetImage(bouquet, color);
+  const image = resolveBouquetImage(bouquet, color);
 
-  const item = {
+  addToCart({
     id: bouquet.id,
     name: bouquet.name,
     priceMin: bouquet.priceMin,
@@ -367,9 +398,13 @@ function onAddToCart(bouquet) {
     image,
     addons: getSelectedAddons(),
     qty: 1,
-  };
+  });
 
-  addToCart(item);
+  // Reset add-ons after adding (clean UX)
+  resetSelectedAddons();
+  syncAddonDropdownOptions();
+  renderAddonChips();
+
   updateHeaderCartBadge();
   updateMiniCartBar();
   showToast("Added to cart", bouquet.name);
@@ -381,4 +416,6 @@ function onAddToCart(bouquet) {
 
 const bouquetId = getBouquetId();
 const bouquet = BOUQUETS.find((b) => b.id === bouquetId);
+
 renderBouquet(bouquet);
+updateMiniCartBar(); // ensure correct on initial load even if bouquet missing

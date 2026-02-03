@@ -1,3 +1,4 @@
+// src/js/header.js
 import { getCartCount } from "./cart.js";
 
 const CART_KEY = "sb_cart_v1";
@@ -8,6 +9,7 @@ function updateCartBadge() {
   if (!el) return;
 
   const count = getCartCount();
+
   if (!count) {
     el.textContent = "";
     el.style.display = "none";
@@ -18,9 +20,23 @@ function updateCartBadge() {
   el.style.display = "inline-flex";
 }
 
-function normalizePathFile() {
-  const file = (window.location.pathname.split("/").pop() || "").trim();
+function normalizePathFile(pathname = window.location.pathname) {
+  const file = (String(pathname).split("/").pop() || "").trim();
   return file || "index.html";
+}
+
+function hrefToFile(href) {
+  const raw = String(href || "").trim();
+  if (!raw) return "";
+
+  // strip query/hash
+  const clean = raw.split("?")[0].split("#")[0];
+
+  // remove leading ./ and leading /
+  const noPrefix = clean.replace(/^\.\//, "").replace(/^\//, "");
+
+  // if the href is a full path, keep only the filename
+  return normalizePathFile(noPrefix);
 }
 
 function setActiveNav() {
@@ -30,15 +46,12 @@ function setActiveNav() {
     a.classList.remove("active");
     a.removeAttribute("aria-current");
 
-    const href = (a.getAttribute("href") || "").trim();
+    const href = a.getAttribute("href");
     if (!href) return;
 
-    // Normalize href: remove leading ./, strip query/hash
-    const hrefNoPrefix = href.replace(/^\.\//, "");
-    const hrefFile = hrefNoPrefix.split("?")[0].split("#")[0];
-
-    // If link is an in-page section on index.html, only active on index.html
-    if (hrefNoPrefix.startsWith("index.html#")) {
+    // Special case: index.html#section should only highlight on index.html
+    const hrefRaw = String(href).trim().replace(/^\.\//, "");
+    if (hrefRaw.startsWith("index.html#")) {
       if (currentFile === "index.html") {
         a.classList.add("active");
         a.setAttribute("aria-current", "page");
@@ -46,8 +59,8 @@ function setActiveNav() {
       return;
     }
 
-    // Normal page match
-    if (hrefFile === currentFile) {
+    const hrefFile = hrefToFile(href);
+    if (hrefFile && hrefFile === currentFile) {
       a.classList.add("active");
       a.setAttribute("aria-current", "page");
     }
@@ -85,8 +98,8 @@ function setupMobileMenu() {
   setOpen(false);
 
   btn.addEventListener("click", () => {
-    const isOpen = header.classList.contains("nav-open");
-    setOpen(!isOpen);
+    const openNow = header.classList.contains("nav-open");
+    setOpen(!openNow);
   });
 
   // Close menu when clicking a nav link (mobile only)
@@ -112,15 +125,26 @@ function refreshHeader() {
   setActiveNav();
 }
 
-// Boot
+/* ------------------------------
+   Boot
+-------------------------------- */
+
+// Normal initial load
 refreshHeader();
 setupMobileMenu();
 
-// Keep in sync if cart updates in another tab
-window.addEventListener("storage", (e) => {
-  if (e.key === CART_KEY) refreshHeader();
+// Fix badge/nav when coming back via bfcache (Safari/Chrome mobile)
+window.addEventListener("pageshow", () => {
+  refreshHeader();
 });
 
-// Optional: allow other scripts to trigger refresh
+// Keep in sync if cart updates in another tab
+window.addEventListener("storage", (e) => {
+  if (!e) return;
+  if (e.key !== CART_KEY) return;
+  refreshHeader();
+});
+
+// Allow other scripts to trigger refresh
 window.__sbUpdateCartBadge = updateCartBadge;
 window.__sbRefreshHeader = refreshHeader;

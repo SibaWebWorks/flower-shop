@@ -2,22 +2,11 @@
 import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { getCart, clearCart, updateQty, removeItem, updateItem } from "./cart.js";
 import { openWhatsAppCart } from "./whatsapp.js";
+import { resolveImgSrc, showToast, updateHeaderCartBadge } from "./ui.js";
 
 const cartList = document.querySelector("#cartList");
 const clearBtn = document.querySelector("#clearCartBtn");
 const checkoutBtn = document.querySelector("#checkoutBtn");
-
-/* ------------------------------
-   Helpers: resolve image URLs
--------------------------------- */
-
-function resolveImgSrc(input) {
-  const raw = String(input || "").trim();
-  if (!raw) return "";
-  if (/^https?:\/\//i.test(raw)) return raw;
-  const noPrefix = raw.replace(/^\.\//, "");
-  return `./${noPrefix}`;
-}
 
 /* ------------------------------
    Delivery Date (Cart-level)
@@ -297,46 +286,6 @@ function getEstimate(cart) {
 function setCheckoutEnabled(enabled) {
   if (!checkoutBtn) return;
   checkoutBtn.disabled = !enabled;
-}
-
-function updateHeaderCartBadge() {
-  if (typeof window.__sbUpdateCartBadge === "function") window.__sbUpdateCartBadge();
-}
-
-/* ------------------------------
-   Toast UX
--------------------------------- */
-
-let toastTimer = null;
-
-function ensureToast() {
-  let toast = document.querySelector("#sbToast");
-  if (toast) return toast;
-
-  toast = document.createElement("div");
-  toast.id = "sbToast";
-  toast.className = "toast";
-  toast.setAttribute("role", "status");
-  toast.setAttribute("aria-live", "polite");
-  toast.innerHTML = `
-    <span id="sbToastTitle">Done</span>
-    <span class="toast-muted" id="sbToastMeta"></span>
-  `;
-  document.body.appendChild(toast);
-  return toast;
-}
-
-function showToast(title = "Done", meta = "") {
-  const toast = ensureToast();
-  const titleEl = toast.querySelector("#sbToastTitle");
-  const metaEl = toast.querySelector("#sbToastMeta");
-
-  if (titleEl) titleEl.textContent = title;
-  if (metaEl) metaEl.textContent = meta;
-
-  toast.classList.add("show");
-  if (toastTimer) window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
 /* ------------------------------

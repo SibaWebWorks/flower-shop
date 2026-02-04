@@ -1,46 +1,10 @@
 // src/js/app.js
 import { SHOP, BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart } from "./cart.js";
+import { resolveImgSrc, showToast, updateHeaderCartBadge } from "./ui.js";
 
 function $(sel) {
   return document.querySelector(sel);
-}
-
-/* ------------------------------
-   Toast (shared: home + catalog)
--------------------------------- */
-
-function ensureToast() {
-  let toast = $("#sbToast");
-  if (toast) return toast;
-
-  toast = document.createElement("div");
-  toast.id = "sbToast";
-  toast.className = "toast";
-  toast.innerHTML = `
-    <span id="sbToastText">Done</span>
-    <span class="toast-muted">• View cart when ready</span>
-  `;
-  document.body.appendChild(toast);
-  return toast;
-}
-
-let toastTimer = null;
-
-function showToast(text = "Done") {
-  const toast = ensureToast();
-  const t = $("#sbToastText");
-  if (t) t.textContent = text;
-
-  toast.classList.add("show");
-  window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1700);
-}
-
-function updateHeaderCartBadge() {
-  if (typeof window.__sbUpdateCartBadge === "function") {
-    window.__sbUpdateCartBadge();
-  }
 }
 
 /* ------------------------------
@@ -89,17 +53,14 @@ function wireDeliveryAreasModal() {
 
   if (!btn || !modal || !list) return;
 
-  // populate on boot
   renderDeliveryAreas(list);
 
   btn.addEventListener("click", () => openModal(modal));
 
-  // close on backdrop / close buttons
   modal.querySelectorAll("[data-modal-close]").forEach((el) => {
     el.addEventListener("click", () => closeModal(modal));
   });
 
-  // close on ESC
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal.classList.contains("is-open")) {
       closeModal(modal);
@@ -128,22 +89,6 @@ function midPrice(b) {
   if (!c) return a;
   if (!a) return c;
   return (a + c) / 2;
-}
-
-/**
- * Normalize image source so it works for:
- * - absolute URLs (https://...)
- * - relative paths (assets/...)
- * - already-prefixed paths (./assets/...)
- */
-function resolveImgSrc(input) {
-  const raw = String(input || "").trim();
-  if (!raw) return "";
-
-  if (/^https?:\/\//i.test(raw)) return raw;
-
-  const noPrefix = raw.replace(/^\.\//, "");
-  return `./${noPrefix}`;
 }
 
 function safeFirst(arr) {
@@ -214,7 +159,6 @@ function renderCards(container, bouquets, { enableQuickAdd } = {}) {
     .map((b) => {
       const detailUrl = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
 
-      // ✅ Use the unified image system
       const imgRaw = getBouquetImage(b, null) || b.defaultImage || b.image || "";
       const src = resolveImgSrc(imgRaw);
 
@@ -262,11 +206,9 @@ function wireQuickAdd(container) {
       const b = BOUQUETS.find((x) => x.id === id);
       if (!b) return;
 
-      // Quick add uses the FIRST available options (safe defaults)
       const size = safeFirst(b.sizes);
       const color = safeFirst(b.colors);
 
-      // If we can't choose safely, route user to customise page
       if (!size || !color) {
         window.location.href = `./bouquet.html?id=${encodeURIComponent(b.id)}`;
         return;
@@ -287,7 +229,7 @@ function wireQuickAdd(container) {
       });
 
       updateHeaderCartBadge();
-      showToast(`${b.name} added`);
+      showToast("Added to cart", b.name);
     });
   });
 }
@@ -355,7 +297,6 @@ function applyFiltersAndSort() {
   }
 
   if (sort === "featured") {
-    // featured first, then name
     list.sort((a, b) => {
       const feat = Number(!!b.featured) - Number(!!a.featured);
       if (feat !== 0) return feat;

@@ -1,6 +1,7 @@
 // src/js/state.js
 import { BOUQUETS, getBouquetImage } from "./data.js";
 import { addToCart, getCartCount } from "./cart.js";
+import { showToast, updateHeaderCartBadge } from "./ui.js";
 
 /* ------------------------------
    Helpers
@@ -18,20 +19,9 @@ function getSelectValue(id) {
   return v ? v : null;
 }
 
-function updateHeaderCartBadge() {
-  if (typeof window.__sbUpdateCartBadge === "function") {
-    window.__sbUpdateCartBadge();
-  }
-}
-
 function resolveBouquetImage(bouquet, color) {
   if (!bouquet) return "";
-  return (
-    getBouquetImage(bouquet, color) ||
-    bouquet.defaultImage ||
-    bouquet.image ||
-    ""
-  );
+  return getBouquetImage(bouquet, color) || bouquet.defaultImage || bouquet.image || "";
 }
 
 /* ------------------------------
@@ -53,45 +43,6 @@ function updateMiniCartBar() {
   }
 
   bar.style.display = count > 0 ? "block" : "none";
-}
-
-/* ------------------------------
-   Toast UX
--------------------------------- */
-
-let toastTimer = null;
-
-function ensureToast() {
-  let toast = document.querySelector("#sbToast");
-  if (toast) return toast;
-
-  toast = document.createElement("div");
-  toast.id = "sbToast";
-  toast.className = "toast";
-  toast.setAttribute("role", "status");
-  toast.setAttribute("aria-live", "polite");
-  toast.innerHTML = `
-    <span id="sbToastTitle">Added to cart</span>
-    <span class="toast-muted" id="sbToastMeta"></span>
-  `;
-  document.body.appendChild(toast);
-  return toast;
-}
-
-function showToast(title = "Added to cart", meta = "") {
-  const toast = ensureToast();
-  const titleEl = toast.querySelector("#sbToastTitle");
-  const metaEl = toast.querySelector("#sbToastMeta");
-
-  if (titleEl) titleEl.textContent = title;
-  if (metaEl) metaEl.textContent = meta;
-
-  toast.classList.add("show");
-
-  if (toastTimer) window.clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2200);
 }
 
 /* ------------------------------

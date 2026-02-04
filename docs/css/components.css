@@ -146,7 +146,8 @@ button {
 
 /* Keep selects looking like selects: add a clean arrow */
 select {
-  padding-right: 44px; /* space for arrow */
+  padding-right: 44px;
+  /* space for arrow */
   background-image:
     linear-gradient(45deg, transparent 50%, rgba(17, 17, 17, 0.65) 50%),
     linear-gradient(135deg, rgba(17, 17, 17, 0.65) 50%, transparent 50%),
@@ -768,3 +769,38 @@ label.addon-row:hover {
   gap: 6px;
 }
 
+/* =========================================================
+   MOBILE NAV — FORCE ZERO RADIUS ON MENU + ACTIVE LINKS
+   (Fixes the "rounded pill" highlight on small screens)
+========================================================= */
+
+@media (max-width: 899px) {
+
+  /* Menu button */
+  #menuBtn,
+  #menuBtn *,
+  .menu-btn,
+  .menu-btn * {
+    border-radius: 0 !important;
+  }
+
+  /* Primary nav links and their active states */
+  #primaryNav a,
+  #primaryNav a.active,
+  #primaryNav a[aria-current="page"],
+  nav.nav a,
+  nav.nav a.active,
+  nav.nav a[aria-current="page"] {
+    border-radius: 0 !important;
+  }
+
+  /* If the rounding is applied to a wrapper instead of the <a> */
+  #primaryNav li,
+  #primaryNav .nav-item,
+  #primaryNav .nav-link,
+  nav.nav li,
+  nav.nav .nav-item,
+  nav.nav .nav-link {
+    border-radius: 0 !important;
+  }
+}

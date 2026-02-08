@@ -1,6 +1,6 @@
 :root {
-  /* Flower template imagery hooks (optional later; safe to add now) */
-  --img-hero: url("https://images.pexels.com/photos/2879830/pexels-photo-2879830.jpeg?cs=srgb&dl=pexels-secret-garden-333350-2879830.jpg&fm=jpg");
+  /* Hero image hook (now GIF) */
+  --img-hero: url("https://upload.wikimedia.org/wikipedia/commons/0/0b/Animated_flower.gif");
 
   /* Palette */
   --page-bg: #e9e7e4;

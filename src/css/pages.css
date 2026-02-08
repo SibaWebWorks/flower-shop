@@ -11,12 +11,24 @@
     border: 1px solid rgba(0, 0, 0, 0.10);
 
     background:
-        linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 42%, rgba(0, 0, 0, 0.08) 100%),
+        linear-gradient(90deg,
+            rgba(0, 0, 0, 0.45) 0%,
+            rgba(0, 0, 0, 0.18) 42%,
+            rgba(0, 0, 0, 0.08) 100%),
         var(--img-hero);
 
     background-size: cover;
     background-position: right center;
+    background-repeat: no-repeat;
     overflow: hidden;
+}
+
+/* ✅ If you ever accidentally render an <img> inside the hero,
+   hide it so you don't get broken-image alt text like "Animated flowers". */
+.hero img,
+.hero picture,
+.hero figure {
+    display: none !important;
 }
 
 .hero::after {
@@ -503,7 +515,6 @@
    (Size / Colour / Add-ons)
    ================================ */
 
-/* Force native selects/inputs in bouquet detail to be sharp */
 .detail select,
 .detail input[type="text"],
 .detail input[type="date"],
@@ -514,7 +525,6 @@
     appearance: none;
 }
 
-/* Also ensure the wrapper card doesn't create a rounded illusion */
 .detail .detail-card,
 .detail .detail-cta {
     border-radius: 0;
@@ -570,7 +580,6 @@
     }
 }
 
-/* NEW: make bouquets page match Spring Favorites (square tiles + 3-col grid) */
 .catalog-grid {
     display: grid;
     gap: 14px;

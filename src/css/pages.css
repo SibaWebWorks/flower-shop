@@ -5,9 +5,11 @@
    ========================== */
 
 .hero {
-    margin-top: 6px;
+    margin-top: 0;
     position: relative;
-    height: clamp(320px, 55vh, 420px);
+
+    /* slightly shorter + cleaner on desktop */
+    height: clamp(280px, 48vh, 380px);
     border: 1px solid rgba(0, 0, 0, 0.10);
 
     background:
@@ -15,7 +17,7 @@
         var(--img-hero);
 
     background-size: cover;
-    background-position: right center;
+    background-position: center;
     overflow: hidden;
 }
 

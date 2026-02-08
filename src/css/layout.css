@@ -106,9 +106,9 @@
   padding: 6px 0;
   border-bottom: 1px solid transparent;
   border-radius: 0;
-  border: 0;
 }
 
+/* Footer-style underline on hover */
 .nav a:hover {
   border-bottom-color: rgba(0, 0, 0, 0.25);
   background: transparent;
@@ -142,7 +142,7 @@
 }
 
 /* --------------------------
-   Mobile dropdown behavior (keep your existing JS state: .site-head.nav-open)
+   Mobile dropdown behavior (keep your existing JS state)
    -------------------------- */
 
 @media (max-width: 899px) {
@@ -174,7 +174,6 @@
     backdrop-filter: blur(10px);
     z-index: 10;
 
-    /* Closed state */
     max-height: 0;
     opacity: 0;
     transform: translateY(-6px);
@@ -211,7 +210,7 @@
 }
 
 /* ==========================
-   Layout helpers (keep yours)
+   Layout helpers
    ========================== */
 
 .stack {

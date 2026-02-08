@@ -1,6 +1,6 @@
 :root {
-  /* Hero image hook (now GIF) */
-  --img-hero: url("https://upload.wikimedia.org/wikipedia/commons/0/0b/Animated_flower.gif");
+  /* Hero image (remote animated GIF) */
+  --img-hero: url("https://media1.tenor.com/m/IU6DpnQpnmkAAAAd/flower-fields.gif");
 
   /* Palette */
   --page-bg: #e9e7e4;

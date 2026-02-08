@@ -11,24 +11,12 @@
     border: 1px solid rgba(0, 0, 0, 0.10);
 
     background:
-        linear-gradient(90deg,
-            rgba(0, 0, 0, 0.45) 0%,
-            rgba(0, 0, 0, 0.18) 42%,
-            rgba(0, 0, 0, 0.08) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 42%, rgba(0, 0, 0, 0.08) 100%),
         var(--img-hero);
 
     background-size: cover;
     background-position: right center;
-    background-repeat: no-repeat;
     overflow: hidden;
-}
-
-/* ✅ If you ever accidentally render an <img> inside the hero,
-   hide it so you don't get broken-image alt text like "Animated flowers". */
-.hero img,
-.hero picture,
-.hero figure {
-    display: none !important;
 }
 
 .hero::after {
